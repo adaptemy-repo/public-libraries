@@ -1,0 +1,19 @@
+{
+  "name": "adaptemy-libs",
+  "version": "1.0.0",
+  "description": "Public libraries",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adaptemy-repo/public-libraries.git"
+  },
+  "author": "Andriyan Ivanov @ Adaptemy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/adaptemy-repo/public-libraries/issues"
+  },
+  "homepage": "https://github.com/adaptemy-repo/public-libraries#readme"
+}
