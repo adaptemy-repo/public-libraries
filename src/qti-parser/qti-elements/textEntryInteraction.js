@@ -20,7 +20,7 @@ export default class textEntryInteraction {
 
     input.setAttribute('id', this.name);
     input.setAttribute('type', 'text');
-    input.setAttribute('maxlength', this.maxLength);
+    //input.setAttribute('maxlength', this.maxLength);
     input.setAttribute('answer-length', this.answerLength);
 
     return input;
