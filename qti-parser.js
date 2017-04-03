@@ -1,2 +1,2 @@
-import QTIParser from './src/qti-parser/qti-parser';
+import QTIParser from './src/qti/qti-parser';
 export default QTIParser;
