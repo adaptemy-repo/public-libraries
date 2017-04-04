@@ -112,11 +112,11 @@ class QTIParser {
     let node, value;
     
     if (nodes.length === 0){
-      //no answer, this is probably an authoring error
+      // no answer, this is probably an authoring error
       value = 'meerkat';
     }
     else if (nodes.length === 1){
-      //single answer, most questions are in here
+      // single answer, most questions are in here
       node = nodes[0];
       if(node.attributes.hasOwnProperty('choiceIdentifier')) {
         value = node.getAttribute('choiceIdentifier');
@@ -125,8 +125,8 @@ class QTIParser {
         value = this.extractHTML(node);
       }
     }
-    else{
-      //multiple answers
+    else {
+      // multiple answers
       value = [];
       for(let nodeCount = 0; nodeCount < nodes.length; nodeCount++) {
         node = nodes[nodeCount];
