@@ -22,7 +22,7 @@ export default class textEntryInteraction {
     input.setAttribute('identifier', this.name);
     input.setAttribute('id', this.name);
     input.setAttribute('type', 'text');
-    input.setAttribute('maxlength', this.maxLength);
+    //input.setAttribute('maxlength', this.maxLength);
     input.setAttribute('answer-length', this.answerLength);
     input.setAttribute('question-type', this.questionType);
 
