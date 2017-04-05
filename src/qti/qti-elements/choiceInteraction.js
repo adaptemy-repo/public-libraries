@@ -74,7 +74,7 @@ export default class choiceInteraction {
 
     const container = document.createElement('div');
     container.setAttribute('question-type', choiceInteraction.IDENTIFIER);
-    container.className = 'qti-choice-combo ' + this.className;
+    container.className = 'qti-interaction qti-choice-combo ' + this.className;
 
     if(prompt) {
       container.appendChild(this.generatePrompt(prompt));
