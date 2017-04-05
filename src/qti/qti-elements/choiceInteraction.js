@@ -75,6 +75,7 @@ export default class choiceInteraction {
     const container = document.createElement('div');
     container.setAttribute('question-type', choiceInteraction.IDENTIFIER);
     container.setAttribute('interaction-type', this.type);
+    container.strAttribute('identifier', this.name);
     
     container.className = 'qti-interaction qti-choice-combo ' + this.className;
 

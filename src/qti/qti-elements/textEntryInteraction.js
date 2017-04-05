@@ -19,6 +19,7 @@ export default class textEntryInteraction {
     const input = document.createElement('input');
     input.className = this.className;
 
+    input.setAttribute('identifier', this.name);
     input.setAttribute('id', this.name);
     input.setAttribute('type', 'text');
     input.setAttribute('maxlength', this.maxLength);

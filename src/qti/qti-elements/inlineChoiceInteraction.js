@@ -49,6 +49,7 @@ export default class inlineChoiceInteraction {
     const node = document.createElement('span');
     node.className = 'qti-interaction';
     node.setAttribute('question-type', inlineChoiceInteraction.IDENTIFIER);
+    node.strAttribute('identifier', this.name);
     node.appendChild(this.generateSelectNode());
 
     return node;
