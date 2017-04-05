@@ -7,6 +7,7 @@ export default class textEntryInteraction {
 
     this.maxLength = node.getAttribute('expectedLength');
     this.name = node.getAttribute('responseIdentifier');
+    this.questionType = textEntryInteraction.IDENTIFIER;
     this.answer = answers[this.name];
   }
 
@@ -22,6 +23,7 @@ export default class textEntryInteraction {
     input.setAttribute('type', 'text');
     input.setAttribute('maxlength', this.maxLength);
     input.setAttribute('answer-length', this.answerLength);
+    input.setAttribute('question-type', this.questionType);
 
     return input;
   }

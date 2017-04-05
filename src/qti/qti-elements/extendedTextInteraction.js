@@ -6,5 +6,6 @@ export default class extendedTextInteraction extends textEntryInteraction {
   constructor(node, answers) {
     super(node, answers);
     this.className = 'qti-input extended';
+    this.questionType = extendedTextInteraction.IDENTIFIER;
   }
 }

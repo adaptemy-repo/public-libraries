@@ -47,6 +47,7 @@ export default class inlineChoiceInteraction {
 
   generateDOMNode() {
     const node = document.createElement('span');
+    node.setAttribute('question-type', inlineChoiceInteraction.IDENTIFIER);
     node.appendChild(this.generateSelectNode());
 
     return node;
