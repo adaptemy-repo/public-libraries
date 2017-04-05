@@ -1,5 +1,5 @@
-const CHECKBOX = 'checkbox';
-const RADIO = 'radio';
+export const CHECKBOX = 'checkbox';
+export const RADIO = 'radio';
 
 export default class choiceInteraction {
   static IDENTIFIER = 'choiceInteraction';
@@ -74,6 +74,8 @@ export default class choiceInteraction {
 
     const container = document.createElement('div');
     container.setAttribute('question-type', choiceInteraction.IDENTIFIER);
+    container.setAttribute('interaction-type', this.type);
+    
     container.className = 'qti-interaction qti-choice-combo ' + this.className;
 
     if(prompt) {
