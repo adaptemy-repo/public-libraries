@@ -32,7 +32,7 @@ export default class inlineChoiceInteraction {
     const node = document.createElement('select');
     const options = this.getOptions();
 
-    node.className = 'qti-interaction qti-choice inline';
+    node.className = 'qti-choice inline';
     node.setAttribute('id', this.name);
 
     // add an empty option on top, so that the first item isn't auto-selected
@@ -47,6 +47,7 @@ export default class inlineChoiceInteraction {
 
   generateDOMNode() {
     const node = document.createElement('span');
+    node.className = 'qti-interaction';
     node.setAttribute('question-type', inlineChoiceInteraction.IDENTIFIER);
     node.appendChild(this.generateSelectNode());
 
