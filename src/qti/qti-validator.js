@@ -38,7 +38,7 @@ class QTIValidator {
 
   findInputNodeByIdentifier(identifier) {
     const inputs = this.getAllInputs();
-    
+
     for(let i = 0; i < inputs.length; i++) {
       if(inputs[i].getAttribute('identifier') === String(identifier)) {
         return inputs[i];
@@ -51,10 +51,9 @@ class QTIValidator {
       return false;
     }
     
-    console.log('inputz', inputNode, questionNode);
     const answers = QTIParser.extractAnswerValue(questionNode);
     const userAnswer = this.extractUserAnswer(inputNode);
-    
+
     if(typeof answers !== typeof userAnswer) {
       return false;
     }
