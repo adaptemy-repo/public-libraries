@@ -107,7 +107,7 @@ class QTIParser {
     return answer;
   }
   
-  extractAnswerValue(answerNode) {
+  extractAnswerValue(answerNode, humanReadable = false) {
     const nodes = answerNode.getElementsByTagName('value');
     let node, value;
     
@@ -118,7 +118,7 @@ class QTIParser {
     else if (nodes.length === 1){
       // single answer, most questions are in here
       node = nodes[0];
-      if(node.attributes.hasOwnProperty('choiceIdentifier')) {
+      if(!humanReadable && node.attributes.hasOwnProperty('choiceIdentifier')) {
         value = node.getAttribute('choiceIdentifier');
       }
       else {
@@ -130,7 +130,7 @@ class QTIParser {
       value = [];
       for(let nodeCount = 0; nodeCount < nodes.length; nodeCount++) {
         node = nodes[nodeCount];
-        if(node.attributes.hasOwnProperty('choiceIdentifier')) {
+        if(!humanReadable && node.attributes.hasOwnProperty('choiceIdentifier')) {
           value.push(node.getAttribute('choiceIdentifier'));
         }
         else {
