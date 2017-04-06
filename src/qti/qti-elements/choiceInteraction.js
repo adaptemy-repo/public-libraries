@@ -1,8 +1,10 @@
-export const CHECKBOX = 'checkbox';
-export const RADIO = 'radio';
+const CHECKBOX = 'checkbox';
+const RADIO = 'radio';
 
 export default class choiceInteraction {
   static IDENTIFIER = 'choiceInteraction';
+  static RADIO = RADIO;
+  static CHECKBOX = CHECKBOX;
 
   constructor(node, answers) {
     this.node = node;
