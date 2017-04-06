@@ -51,24 +51,24 @@ class QTIValidator {
       return false;
     }
     
-    const answers = QTIParser.extractAnswerValue(questionNode);
+    const answer = QTIParser.extractAnswerValue(questionNode);
     const userAnswer = this.extractUserAnswer(inputNode);
-
-    if(typeof answers !== typeof userAnswer) {
+    
+    if(typeof answer !== typeof userAnswer) {
       return false;
     }
     
     let result = true;
-    if(Array.isArray(answers)) {
-      for(let i = 0; i < answers.length; i++) {
-        if(userAnswers.indexOf(answers[i]) === -1) {
+    if(Array.isArray(answer)) {
+      for(let i = 0; i < answer.length; i++) {
+        if(userAnswer.indexOf(answer[i]) === -1) {
           result = false;
           break;
         }
       }
     }
     else {
-      result = String(answers).trim() === String(userAnswer).trim();
+      result = String(answer).trim() === String(userAnswer).trim();
     }
     
     return result;
