@@ -49,6 +49,7 @@ export default class choiceInteraction {
     const label = document.createElement('label');
     const input = document.createElement('input');
     const choice = document.createElement('span');
+    const accessibilitySpan = document.createElement('span');
     const identifier = node.getAttribute('identifier');
     
     choice.innerHTML = node.innerHTML;
@@ -66,6 +67,7 @@ export default class choiceInteraction {
 
     container.appendChild(input);
     container.appendChild(label);
+    container.appendChild(accessibilitySpan);
 
     return container;
   }
