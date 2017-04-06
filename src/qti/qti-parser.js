@@ -94,49 +94,61 @@ class QTIParser {
     return container.innerHTML;
   }
   
-  getAnswer(questionNode) {
+  getAnswer(questionNode, humanReadable = false) {
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
     let key, value, answer = {};
     
     for(let i = 0; i < nodes.length; i++) {
       key = nodes[i].getAttribute('identifier');
-      value = this.extractAnswerValue(nodes[i]);
+      value = this.extractAnswerValue(nodes[i], questionNode, humanReadable);
       answer[key] = value;
     }
     
     return answer;
   }
   
-  extractAnswerValue(answerNode, humanReadable = false) {
+  extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const nodes = answerNode.getElementsByTagName('value');
     let node, value;
     
+    // no answer, this is probably an authoring error
     if (nodes.length === 0){
-      // no answer, this is probably an authoring error
       value = 'meerkat';
     }
+    // single answer, most questions are in here
     else if (nodes.length === 1){
-      // single answer, most questions are in here
       node = nodes[0];
-      if(!humanReadable && node.attributes.hasOwnProperty('choiceIdentifier')) {
-        value = node.getAttribute('choiceIdentifier');
-      }
-      else {
-        value = this.extractHTML(node);
+      value = this.extractAnswerValueFromNode(node, questionNode, humanReadable);
+    }
+    // multiple answers
+    else {
+      value = [];
+      for(let i = 0; i < nodes.length; i++) {
+        value.push(
+          this.extractAnswerValueFromNode(nodes[i], questionNode, humanReadable)
+        )
       }
     }
+
+    return value;
+  }
+  
+  extractHumanReadableChoice(questionNode, identifier) {
+    const node = questionNode.querySelector(`[identifier="${identifier}"]`);
+    return this.extractHTML(node);
+  }
+  
+  extractAnswerValueFromNode(node, questionNode, humanReadable) {
+    let value;
+    
+    if(node.attributes.hasOwnProperty('choiceIdentifier')) {
+      const identifier = node.getAttribute('choiceIdentifier');
+      value = humanReadable ?
+        this.extractHumanReadableChoice(questionNode, identifier) :
+        identifier;
+    }
     else {
-      // multiple answers
-      value = [];
-      for(let nodeCount = 0; nodeCount < nodes.length; nodeCount++) {
-        node = nodes[nodeCount];
-        if(!humanReadable && node.attributes.hasOwnProperty('choiceIdentifier')) {
-          value.push(node.getAttribute('choiceIdentifier'));
-        }
-        else {
-          value.push(this.extractHTML(node));
-        }
-      }
+      value = this.extractHTML(node);
     }
     
     return value;
@@ -156,6 +168,11 @@ class QTIParser {
     if(solutionNode) {
       return this.extractHTML(solutionNode);  
     }
+  }
+  
+  findByAttribute(attribute, value, node) {
+    const nodes = node.getElementsByTagName('*');
+    return this.findNodeByAttributeValue(attribute, value, nodes);
   }
   
   findNodeByAttributeValue(attribute, value, nodes) {
