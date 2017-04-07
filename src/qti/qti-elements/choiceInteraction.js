@@ -72,6 +72,40 @@ export default class choiceInteraction {
     return container;
   }
 
+  generateOptionImg(node) {
+    const container = document.createElement('div');
+    const containerSpan = document.createElement('span');
+    const label = document.createElement('label');
+    const labelBG = document.createElement('label');
+    const input = document.createElement('input');
+    const choice = document.createElement('span');
+    const accessibilitySpan = document.createElement('span');
+    const identifier = node.getAttribute('identifier');
+    
+    choice.innerHTML = node.innerHTML;
+    container.className = 'margin-bottom';
+    containerSpan.className = 'image-container';
+    labelBG.className = 'image-bg';
+
+    // input attributes
+    input.setAttribute('type', this.type);
+    input.setAttribute('name', this.name);
+    input.setAttribute('value', identifier);
+    input.setAttribute('id', identifier);
+    
+    // label attributes
+    label.setAttribute('for', identifier);
+    label.appendChild(choice);
+
+    container.appendChild(containerSpan);
+    containerSpan.appendChild(input);
+    containerSpan.appendChild(label);
+    containerSpan.appendChild(labelBG);
+    containerSpan.appendChild(accessibilitySpan);
+
+    return container;
+  }
+
   containsImages(){
     return this.node.innerHTML.indexOf('<img') > -1;
   }
@@ -85,7 +119,7 @@ export default class choiceInteraction {
     container.setAttribute('interaction-type', this.type);
     container.setAttribute('identifier', this.name);
     
-    const optionalImgClass = this.containsImages() ? ' with-image' : ' no-image';
+    const optionalImgClass = this.containsImages() ? ' with-image' : '';
     container.className = 'qti-interaction qti-choice-combo ' + this.className + optionalImgClass;
 
     if(prompt) {
@@ -93,7 +127,13 @@ export default class choiceInteraction {
     }
 
     for(let i = 0; i < options.length; i++) {
-      container.appendChild(this.generateOption(options[i]));
+      if (this.containsImages()){
+        container.appendChild(this.generateOptionImg(options[i]));
+      }
+      else{
+        container.appendChild(this.generateOption(options[i]));  
+      }
+      
     }
 
     return container;
