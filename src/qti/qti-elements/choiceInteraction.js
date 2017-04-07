@@ -72,6 +72,10 @@ export default class choiceInteraction {
     return container;
   }
 
+  containsImages(){
+    return this.node.innerHTML.indexOf('<img') > -1;
+  }
+
   generateDOMNode() {
     const options = this.getOptions();
     const prompt = this.getPrompt();
@@ -81,7 +85,8 @@ export default class choiceInteraction {
     container.setAttribute('interaction-type', this.type);
     container.setAttribute('identifier', this.name);
     
-    container.className = 'qti-interaction qti-choice-combo ' + this.className;
+    const optionalImgClass = this.containsImages() ? ' with-image' : ' no-image';
+    container.className = 'qti-interaction qti-choice-combo ' + this.className + optionalImgClass;
 
     if(prompt) {
       container.appendChild(this.generatePrompt(prompt));
