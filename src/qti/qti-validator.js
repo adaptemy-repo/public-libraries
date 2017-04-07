@@ -101,7 +101,7 @@ class QTIValidator {
     // remove preceeding zeros
     value = value.replace(/^0+/, '');
     // remove trailing zeros after last decimal separator
-    value = value.replace(/\.(?=[^.]*$)([^0]*)0+$/, '.$1');
+    value = value.replace(/\.(?=[^.]*$)(.*[^0])0+$/, '.$1');
     // remove trailing decimal separators
     value = value.replace(/\.+$/, '');
     
