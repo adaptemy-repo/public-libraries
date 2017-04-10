@@ -58,8 +58,14 @@ class QTIValidator {
       }
     }
   }
+  
+  getType(item) {
+    return Array.isArray('item') ? 'array' : typeof item;
+  }
 
   validateAnswer(inputNode, questionNode) {
+    let result;
+    
     if(!inputNode || !questionNode) {
       return false;
     }
@@ -67,24 +73,25 @@ class QTIValidator {
     const answer = QTIParser.extractAnswerValue(questionNode);
     const userAnswer = this.extractUserAnswer(inputNode);
     
-    if(typeof answer !== typeof userAnswer) {
+    if(this.getType(answer) !== this.getType(userAnswer)) {
       return false;
     }
     
-    let result = true;
     if(Array.isArray(answer)) {
-      for(let i = 0; i < answer.length; i++) {
+      if(answer.length !== userAnswer.length) {
+        return false;
+      }
+      
+      for(let i = 0; i < userAnswer.length; i++) {
         if(userAnswer.indexOf(answer[i]) === -1) {
-          result = false;
-          break;
+          return false;
         }
       }
-    }
-    else {
-      result = this.uniformatValue(answer) === this.uniformatValue(userAnswer);
+      
+      return true;
     }
     
-    return result;
+    return this.uniformatValue(answer) === this.uniformatValue(userAnswer);
   }
   
   uniformatValue(value) {
