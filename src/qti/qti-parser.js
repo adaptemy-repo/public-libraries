@@ -106,6 +106,21 @@ class QTIParser {
     
     return answer;
   }
+
+  getAnswerArray(questionNode, humanReadable = false) {
+    const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
+    let key, value;
+    var answers = [];
+    for(let i = 0; i < nodes.length; i++) {
+      key = nodes[i].getAttribute('identifier');
+      value = this.extractAnswerValue(nodes[i], questionNode, humanReadable);
+      answers.push({
+        identifier:key,
+        value:value
+      });
+    }
+    return answers;
+  }
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const nodes = answerNode.getElementsByTagName('value');
