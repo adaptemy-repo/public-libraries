@@ -95,6 +95,7 @@ export default class choiceInteraction {
     
     // label attributes
     label.setAttribute('for', identifier);
+    labelBG.setAttribute('for', identifier);
     label.appendChild(choice);
 
     container.appendChild(containerSpan);
