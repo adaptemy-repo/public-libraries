@@ -79,7 +79,9 @@ class QTIValidator {
       }
       var allCorrect = answer.answers.every(function(answer){
         return soln.value.some(function(val){
-          return self.uniformatValue(val) === self.uniformatValue(answer);
+          var stringMatch =  (self.uniformatValue(val) === self.uniformatValue(answer));
+          var numberMatch = Number(self.uniformatValue(val)) === Number(self.uniformatValue(answer));
+          return stringMatch || numberMatch;
         });
       });
       
@@ -148,7 +150,7 @@ class QTIValidator {
       const decimalRegex = new RegExp(`${this.decimalSeparator}`, 'g');
       value = value.replace(decimalRegex, '.');
     }
-    
+
     // remove preceeding zeros
     value = value.replace(/^0+/, '');
     // remove trailing zeros after last decimal separator
