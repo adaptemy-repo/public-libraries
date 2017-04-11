@@ -114,6 +114,9 @@ class QTIParser {
     for(let i = 0; i < nodes.length; i++) {
       key = nodes[i].getAttribute('identifier');
       value = this.extractAnswerValue(nodes[i], questionNode, humanReadable);
+      if (!value.forEach){ //if not an array
+        value = [value];
+      }
       answers.push({
         identifier:key,
         value:value
