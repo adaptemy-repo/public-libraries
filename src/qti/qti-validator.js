@@ -24,8 +24,8 @@ class QTIValidator {
         return inputNode.value;
         
       case QTIElements.inlineChoiceInteraction.IDENTIFIER:
-        const select = inputNode.getElementsByTagName('select');
-        return select.options[select.selectedIndex];
+        const select = inputNode.getElementsByTagName('select')[0];
+        return select.options[select.selectedIndex].value;
         
       case QTIElements.choiceInteraction.IDENTIFIER:
         const interactionType = inputNode.getAttribute('interaction-type');
@@ -47,6 +47,50 @@ class QTIValidator {
 
   getAllInputs() {
     return document.getElementsByClassName('qti-interaction');
+  }
+
+  getAllUserAnswers(DOMNnode){
+    var extractUserAnswer = this.extractUserAnswer;
+    var getType = this.getType;
+    DOMNnode = DOMNnode || document;
+    //get all answers as array
+    var allAnswers = [].slice.call(DOMNnode.querySelectorAll('.qti-interaction'));
+    var formattedAnswers = allAnswers.map(function(answerNode){
+      var ans = extractUserAnswer(answerNode);
+      if (!ans.forEach){ //if not an array
+        ans = [ans];
+      }
+      return {
+        node: answerNode,
+        answers: ans,
+        identifier: answerNode.getAttribute('identifier')
+      };
+    });
+    return formattedAnswers;
+  }
+
+  validateUserAnswersAgainstSolutions(userAnswers, solutions){
+    var matchesIdentifier = this.matchesIdentifier;
+    var self = this;
+    return userAnswers.every(function(answer){
+      var soln = solutions.filter(matchesIdentifier(answer.identifier))[0];
+      if (soln.value.length !== answer.answers.length){
+        return false;
+      }
+      var allCorrect = answer.answers.every(function(answer){
+        return soln.value.some(function(val){
+          return self.uniformatValue(val) === self.uniformatValue(answer);
+        });
+      });
+      
+      return allCorrect;
+    });
+  }
+
+  matchesIdentifier(id){
+    return function(soln){
+      return soln.identifier === id;
+    };
   }
 
   findInputNodeByIdentifier(identifier) {
