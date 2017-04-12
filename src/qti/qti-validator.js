@@ -57,6 +57,7 @@ class QTIValidator {
     var allAnswers = [].slice.call(DOMNnode.querySelectorAll('.qti-interaction'));
     var formattedAnswers = allAnswers.map(function(answerNode){
       var ans = extractUserAnswer(answerNode);
+      ans = ans || [];
       if (!ans.forEach){ //if not an array
         ans = [ans];
       }
