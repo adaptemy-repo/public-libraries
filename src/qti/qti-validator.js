@@ -85,7 +85,10 @@ class QTIValidator {
           return stringMatch || numberMatch;
         });
       });
-      
+      var answerStatus = allCorrect ? 'hide-correct' : 'hide-incorrect';
+      if (answer.node.classList){
+        answer.node.classList.add(answerStatus);  
+      }
       return allCorrect;
     });
   }
