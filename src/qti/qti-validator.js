@@ -159,7 +159,7 @@ class QTIValidator {
     // remove trailing decimal separators
     value = value.replace(/\.+$/, '');
     
-    return urlify(value);
+    return isFinite(parseFloat(value)) ? value : urlify(value);
   }
 }
 
