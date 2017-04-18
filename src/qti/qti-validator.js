@@ -1,6 +1,7 @@
 import QTIParser from './qti-parser';
 import * as QTIElements from './qti-elements';
 
+const urlify = require('urlify').create();
 
 class QTIValidator {
   constructor() {
@@ -158,7 +159,7 @@ class QTIValidator {
     // remove trailing decimal separators
     value = value.replace(/\.+$/, '');
     
-    return value;
+    return urlify(value);
   }
 }
 
