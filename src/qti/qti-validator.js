@@ -58,6 +58,7 @@ class QTIValidator {
     var allAnswers = [].slice.call(DOMNnode.querySelectorAll('.qti-interaction'));
     var formattedAnswers = allAnswers.map(function(answerNode){
       var ans = extractUserAnswer(answerNode);
+      ans = ans || [];
       if (!ans.forEach){ //if not an array
         ans = [ans];
       }
@@ -73,21 +74,30 @@ class QTIValidator {
   validateUserAnswersAgainstSolutions(userAnswers, solutions){
     var matchesIdentifier = this.matchesIdentifier;
     var self = this;
-    return userAnswers.every(function(answer){
+    var allInteractionsCorrect = true;
+    userAnswers.forEach(function(answer){
       var soln = solutions.filter(matchesIdentifier(answer.identifier))[0];
+      var thisInteractionCorrect;
       if (soln.value.length !== answer.answers.length){
-        return false;
+        thisInteractionCorrect = false;
       }
-      var allCorrect = answer.answers.every(function(answer){
-        return soln.value.some(function(val){
-          var stringMatch =  (self.uniformatValue(val) === self.uniformatValue(answer));
-          var numberMatch = Number(self.uniformatValue(val)) === Number(self.uniformatValue(answer));
-          return stringMatch || numberMatch;
-        });
-      });
+      else{
+        thisInteractionCorrect = answer.answers.every(function(answer){
+          return soln.value.some(function(val){
+            var stringMatch =  (self.uniformatValue(val) === self.uniformatValue(answer));
+            var numberMatch = Number(self.uniformatValue(val)) === Number(self.uniformatValue(answer));
+            return stringMatch || numberMatch;
+          });
+        });  
+      }
       
-      return allCorrect;
+      var answerStatus = thisInteractionCorrect ? 'hide-correct' : 'hide-incorrect';
+      if (answer.node.classList){
+        answer.node.classList.add(answerStatus);  
+      }
+      allInteractionsCorrect = allInteractionsCorrect && thisInteractionCorrect;
     });
+    return allInteractionsCorrect;
   }
 
   matchesIdentifier(id){
