@@ -47,6 +47,7 @@ export default class choiceInteraction {
   generateOption(node) {
     const container = document.createElement('div');
     const label = document.createElement('label');
+    const checkboxLabel = document.createElement('label');
     const input = document.createElement('input');
     const choice = document.createElement('span');
     const accessibilitySpan = document.createElement('span');
@@ -62,10 +63,14 @@ export default class choiceInteraction {
     input.setAttribute('id', identifier);
     
     // label attributes
+    checkboxLabel.setAttribute('for', identifier);
     label.setAttribute('for', identifier);
     label.appendChild(choice);
 
     container.appendChild(input);
+    if(this.type !== RADIO) {
+      container.appendChild(checkboxLabel);
+    }
     container.appendChild(label);
     container.appendChild(accessibilitySpan);
 
