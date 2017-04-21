@@ -169,6 +169,9 @@ class QTIValidator {
     // remove trailing decimal separators
     value = value.replace(/\.+$/, '');
     
+    // replace emdash & endash with normal dash
+    value = value.replace(/[\u2013-\u2014]/g, '-');
+    
     return isFinite(parseFloat(value)) ? value : urlify(value);
   }
 }
