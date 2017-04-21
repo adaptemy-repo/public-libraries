@@ -10,6 +10,22 @@ export default class textEntryInteraction {
     this.questionType = textEntryInteraction.IDENTIFIER;
     this.answer = answers[this.name];
   }
+  
+  get answerTypeAttribute() {
+    const isNumber = isFinite(this.answer);
+    const integer = parseInt(this.answer);
+    const decimal = parseFloat(this.answer);
+    
+    if(isNumber && integer === decimal) {
+      return integer >= 0 ? 'qti-natural' : 'qti-integer';
+    }
+    else if(isNumber && integer !== decimal) {
+      return 'qti-real';
+    }
+    else {
+      return 'qti-string';
+    }
+  }
 
   get answerLength() {
     return String(this.answer).length;
@@ -24,6 +40,7 @@ export default class textEntryInteraction {
     input.setAttribute('type', 'text');
     input.setAttribute('answer-length', this.answerLength);
     input.setAttribute('question-type', this.questionType);
+    input.setAttribute(this.answerTypeAttribute, true);
 
     return input;
   }
