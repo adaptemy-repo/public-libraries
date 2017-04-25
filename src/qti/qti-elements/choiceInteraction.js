@@ -133,7 +133,7 @@ export default class choiceInteraction {
     }
 
     for(let i = 0; i < options.length; i++) {
-      if (this.containsImages()){
+      if (this.containsImages() && this.type === RADIO){
         container.appendChild(this.generateOptionImg(options[i]));
       }
       else{
