@@ -108,21 +108,17 @@ class QTIParser {
   }
 
   getAnswerArray(questionNode, humanReadable = false) {
-    const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    let key, value;
-    var answers = [];
-    for(let i = 0; i < nodes.length; i++) {
-      key = nodes[i].getAttribute('identifier');
-      value = this.extractAnswerValue(nodes[i], questionNode, humanReadable);
-      if (!value.forEach){ //if not an array
+    const answers = this.getAnswer(questionNode, humanReadable);
+    
+    return Object.keys(answers).map(identifier => {
+      let value = answers[identifier];
+      
+      if(!Array.isArray(value)) {
         value = [value];
       }
-      answers.push({
-        identifier:key,
-        value:value
-      });
-    }
-    return answers;
+      
+      return { identifier, value };
+    });
   }
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
