@@ -57,25 +57,23 @@ class QTIValidator {
     return Array.prototype.slice.call(inputs);
   }
 
-  getAllUserAnswers(DOMNnode){
-    var extractUserAnswer = this.extractUserAnswer;
-    var getType = this.getType;
-    DOMNnode = DOMNnode || document;
-    //get all answers as array
-    var allAnswers = [].slice.call(DOMNnode.querySelectorAll('.qti-interaction'));
-    var formattedAnswers = allAnswers.map(function(answerNode){
-      var ans = extractUserAnswer(answerNode);
-      ans = ans || [];
-      if (!ans.forEach){ //if not an array
-        ans = [ans];
+  getAllUserAnswers(inputsNode) {
+    const inputs = this.getInputsFromNode(inputsNode);
+    
+    return inputs.map(node => {
+      let answers = this.extractUserAnswer(node) || [];
+      
+      // cast to array
+      if(!Array.isArray(answers)) {
+        answers = [answers];
       }
+      
       return {
-        node: answerNode,
-        answers: ans,
-        identifier: answerNode.getAttribute('identifier')
+        node,
+        answers,
+        identifier: node.getAttribute('identifier')
       };
     });
-    return formattedAnswers;
   }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions){
