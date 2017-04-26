@@ -231,7 +231,7 @@ class QTIValidator {
           throw 'The provided inputNode did not contain a question-type';
       }
     });
-    console.log('rating estimated', rating);
+
     return rating >= MINIMAL_SECOND_CHANCE_RATING;      
   }
 }
