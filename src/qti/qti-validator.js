@@ -2,6 +2,7 @@ import QTIParser from './qti-parser';
 import * as QTIElements from './qti-elements';
 
 const urlify = require('urlify').create();
+const MINIMAL_SECOND_CHANCE_RATING = 4;
 
 class QTIValidator {
   constructor() {
@@ -46,8 +47,14 @@ class QTIValidator {
     throw 'The provided inputNode did not contain a question-type';
   }
 
-  getAllInputs() {
-    return document.getElementsByClassName('qti-interaction');
+  getAllInputs(node) {
+    node = node || document;
+    return node.getElementsByClassName('qti-interaction');
+  }
+  
+  getInputsFromNode(node) {
+    const inputs = this.getAllInputs(node);
+    return Array.prototype.slice.call(inputs);
   }
 
   getAllUserAnswers(DOMNnode){
@@ -173,6 +180,59 @@ class QTIValidator {
     value = value.replace(/[\u2013-\u2014]/g, '-');
     
     return isFinite(parseFloat(value)) ? value : urlify(value);
+  }
+  
+  meritsASecondChance(inputNode) {
+    let inputNodes;
+    let rating = 0;
+    
+    if(Array.isArray(inputNode)) {
+      inputNodes = inputNode;
+    }
+    else {
+      inputNodes = this.getInputsFromNode(inputNode);
+    }
+
+    // loop through all input fields to build a final second chance rating
+    inputNodes.forEach(inputNode => {
+      const questionType = inputNode.getAttribute('question-type');
+      
+      switch(questionType) {
+        // text box inputs get a rating equal to the minimal
+        // for a second chance
+        case QTIElements.extendedTextInteraction.IDENTIFIER:
+        case QTIElements.textEntryInteraction.IDENTIFIER:
+          rating += MINIMAL_SECOND_CHANCE_RATING;
+          break;
+          
+        // select fields get a rating equal to the amount of options -1
+        // compensating for the empty select option
+        case QTIElements.inlineChoiceInteraction.IDENTIFIER:
+          const select = inputNode.getElementsByTagName('select')[0];
+          rating += select.options.length - 1;
+          break;
+          
+        // checkboxes & radios
+        case QTIElements.choiceInteraction.IDENTIFIER:
+          const interactionType = inputNode.getAttribute('interaction-type');
+          const inputs = inputNode.getElementsByTagName('input');
+          
+          // radios get a rating that equals the amount of options
+          if(interactionType === QTIElements.choiceInteraction.RADIO) {
+            rating += inputs.length;
+          }
+          // checkboxes get rating of 2 power of amount of options
+          else {
+            rating += Math.pow(2, inputs.length);
+          }
+          break;
+          
+        default:
+          throw 'The provided inputNode did not contain a question-type';
+      }
+    });
+    console.log('rating estimated', rating);
+    return rating >= MINIMAL_SECOND_CHANCE_RATING;      
   }
 }
 
