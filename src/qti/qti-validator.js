@@ -97,7 +97,6 @@ class QTIValidator {
     
     for(let i = 0; i < userAnswers.length; i++) {
       if(userAnswers[i].node.classList) {
-        console.log(userAnswers[i].node.classList);
         userAnswers[i].node.classList.add(
           isValid[i] ? 'hide-correct' : 'hide-incorrect'
         );
