@@ -75,40 +75,39 @@ class QTIValidator {
       };
     });
   }
-
-  validateUserAnswersAgainstSolutions(userAnswers, solutions){
-    var matchesIdentifier = this.matchesIdentifier;
-    var self = this;
-    var allInteractionsCorrect = true;
-    userAnswers.forEach(function(answer){
-      var soln = solutions.filter(matchesIdentifier(answer.identifier))[0];
-      var thisInteractionCorrect;
-      if (soln.value.length !== answer.answers.length){
-        thisInteractionCorrect = false;
-      }
-      else{
-        thisInteractionCorrect = answer.answers.every(function(answer){
-          return soln.value.some(function(val){
-            var stringMatch =  (self.uniformatValue(val) === self.uniformatValue(answer));
-            var numberMatch = Number(self.uniformatValue(val)) === Number(self.uniformatValue(answer));
-            return stringMatch || numberMatch;
-          });
-        });  
-      }
-      
-      var answerStatus = thisInteractionCorrect ? 'hide-correct' : 'hide-incorrect';
-      if (answer.node.classList){
-        answer.node.classList.add(answerStatus);  
-      }
-      allInteractionsCorrect = allInteractionsCorrect && thisInteractionCorrect;
+  
+  isValidUserAnswer(solutions, userAnswer) {
+    const solution = solutions.find(s => s.identifier === userAnswer.identifier);
+    
+    if(solution.value.length !== userAnswer.answers.length) {
+      return false;
+    }
+    
+    return userAnswer.answers.every(answer => {
+      return solution.value.some(value => {
+        // @ATTENTION no need to cast to Number!
+        // both values are uniform strings and will be equalized!
+        return this.uniformatValue(value) === this.uniformatValue(answer);
+      });
     });
-    return allInteractionsCorrect;
+  }
+  
+  setCorrectnessClass(userAnswers, solutions) {
+    const isValid = userAnswers.map(this.isValidUserAnswer.bind(this, solutions));
+    
+    for(let i = 0; i < userAnswers.length; i++) {
+      if(userAnswers[i].node.classList) {
+        console.log(userAnswers[i].node.classList);
+        userAnswers[i].node.classList.add(
+          isValid[i] ? 'hide-correct' : 'hide-incorrect'
+        );
+      }
+    }
   }
 
-  matchesIdentifier(id){
-    return function(soln){
-      return soln.identifier === id;
-    };
+  validateUserAnswersAgainstSolutions(userAnswers, solutions) {    
+    this.setCorrectnessClass(userAnswers, solutions);
+    return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 
   findInputNodeByIdentifier(identifier) {
