@@ -87,7 +87,13 @@ class QTIValidator {
       return solution.value.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
-        return this.uniformatValue(value) === this.uniformatValue(answer);
+        // @ATTENTION this.uniformatValue('80') !== this.uniformatValue('80,0');
+
+        var ansA = this.uniformatValue(value);
+        var ansB = this.uniformatValue(answer);
+        var stringMatch = (ansA === ansB);
+        var numericMatch = (Number(ansA) === Number(ansB));
+        return stringMatch || numericMatch;
       });
     });
   }
