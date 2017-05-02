@@ -87,7 +87,6 @@ class QTIValidator {
       return solution.value.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
-        // @ATTENTION this.uniformatValue('80') !== this.uniformatValue('80,0');
 
         const ansA = this.uniformatValue(value);
         const ansB = this.uniformatValue(answer);
