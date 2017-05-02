@@ -89,10 +89,11 @@ class QTIValidator {
         // both values are uniform strings and will be equalized!
         // @ATTENTION this.uniformatValue('80') !== this.uniformatValue('80,0');
 
-        var ansA = this.uniformatValue(value);
-        var ansB = this.uniformatValue(answer);
-        var stringMatch = (ansA === ansB);
-        var numericMatch = (Number(ansA) === Number(ansB));
+        const ansA = this.uniformatValue(value);
+        const ansB = this.uniformatValue(answer);
+        const stringMatch = ansA === ansB;
+        const numericMatch = Number(ansA) === Number(ansB);
+
         return stringMatch || numericMatch;
       });
     });
@@ -175,8 +176,8 @@ class QTIValidator {
     value = value.replace(/^0+/, '');
     // remove trailing zeros after last decimal separator
     value = value.replace(/\.(?=[^.]*$)(.*[^0])0+$/, '.$1');
-    // remove trailing decimal separators
-    value = value.replace(/\.+$/, '');
+    // remove trailing decimal separators and zeros
+    value = value.replace(/(\.+(0+)?)$/, '');
     
     // replace emdash & endash with normal dash
     value = value.replace(/[\u2013-\u2014]/g, '-');
