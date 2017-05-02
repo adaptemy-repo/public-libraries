@@ -1,4 +1,5 @@
 import QTIParser from './qti-parser';
+import QTIStyler from './qti-styler';
 import * as QTIElements from './qti-elements';
 
 const urlify = require('urlify').create();
@@ -110,8 +111,9 @@ class QTIValidator {
     }
   }
 
-  validateUserAnswersAgainstSolutions(userAnswers, solutions) {    
-    this.setCorrectnessClass(userAnswers, solutions);
+  validateUserAnswersAgainstSolutions(userAnswers, solutions) {
+    //this.setCorrectnessClass(userAnswers, solutions);
+    QTIStyler.setInputValidationState(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 
