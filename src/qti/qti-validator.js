@@ -98,21 +98,8 @@ class QTIValidator {
       });
     });
   }
-  
-  setCorrectnessClass(userAnswers, solutions) {
-    const isValid = userAnswers.map(this.isValidUserAnswer.bind(this, solutions));
-    
-    for(let i = 0; i < userAnswers.length; i++) {
-      if(userAnswers[i].node.classList) {
-        userAnswers[i].node.classList.add(
-          isValid[i] ? 'hide-correct' : 'hide-incorrect'
-        );
-      }
-    }
-  }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
-    //this.setCorrectnessClass(userAnswers, solutions);
     QTIStyler.setInputValidationState(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
