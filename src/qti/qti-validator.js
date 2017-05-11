@@ -31,21 +31,28 @@ class QTIValidator {
         return select.options[select.selectedIndex].value;
         
       case QTIElements.choiceInteraction.IDENTIFIER:
-        const interactionType = inputNode.getAttribute('interaction-type');
-        const inputs = inputNode.getElementsByTagName('input');
-        const values = [];
-        
-        for(let i = 0; i < inputs.length; i++) {
-          if(inputs[i].checked) {
-            values.push(inputs[i].id);
-          }
-        }
-        
-        return interactionType === QTIElements.choiceInteraction.RADIO ?
-          values[0] : values;
+        return this.getCheckedValues(inputNode);
     }
     
     throw 'The provided inputNode did not contain a question-type';
+  }
+  
+  getCheckedValues(node) {
+    const inputs = node.getElementsByTagName('input');
+    const values = [];
+    
+    for(let i = 0; i < inputs.length; i++) {
+      if(inputs[i].checked) {
+        values.push(inputs[i].id);
+      }
+    }
+    
+    return this.isRadio(node) ? values[0] : values;
+  }
+  
+  isRadio(node) {
+    const interactionType = node.getAttribute('interaction-type');
+    return interactionType === QTIElements.choiceInteraction.RADIO;
   }
 
   getAllInputs(node) {
