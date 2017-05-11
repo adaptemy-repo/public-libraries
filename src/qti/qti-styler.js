@@ -13,9 +13,16 @@ class QTIStyler {
     return this;
   }
   
-  setCorrectnessClass(node, correct = true) {
-    this.resetStyles(node);
-    node.classList.add(correct ? CORRECT : INCORRECT);
+  setCorrectnessClass(node, correct = true, doReset = true) {
+    if(doReset) {
+      this.resetStyles(node);
+    }
+    
+    const addClass = correct ? CORRECT : INCORRECT;
+    if(!node.classList.contains(addClass)) {
+      node.classList.add(addClass);
+    }
+  
     return this;
   }
   
@@ -25,10 +32,10 @@ class QTIStyler {
   }
   
   setInputValidationState(userAnswers, solutions, hasUsedLastChance = false) {
+    let node, isValid, questionType;
     const answerArray = userAnswers.map(
       QTIValidator.isValidUserAnswer.bind(QTIValidator, solutions)
     );
-    let node, isValid, questionType;
     
     for(let i = 0; i < answerArray.length; i++) {
       node = userAnswers[i].node;
@@ -46,12 +53,44 @@ class QTIStyler {
           break;
           
         case QTIElements.choiceInteraction.IDENTIFIER:
+          if(QTIValidator.isRadio(node)) {
+            this.validateRadioInput(node, isValid, hasUsedLastChance);
+          }
+          else {
+            this.validateCheckboxInput(node, isValid, hasUsedLastChance);
+          }
           break;
           
         default:
           throw 'The provided inputNode did not contain a question-type';
       }
     }
+  }
+  
+  validateRadioInput(node, isValid, hasUsedLastChance) {
+    const inputs = node.getElementsByTagName('input');
+    const value = QTIValidator.getCheckedValues(node);
+    
+    // empty incorrect value, do nothing
+    if(!value && !isValid) {
+      return;
+    }
+    
+    // last attempt or is valid - disable input
+    for(let i = 0; i < inputs.length; i++) {
+      if(isValid || hasUsedLastChance) {
+        this.disable(inputs[i]);
+      }
+      
+      if(inputs[i].checked) {
+        this.setCorrectnessClass(inputs[i], isValid, false);
+      }
+      
+    }
+  }
+  
+  validateCheckboxInput(node, isValid, hasUsedLastChance) {
+    console.info('validateCheckboxInput', node, isValid, hasUsedLastChance);
   }
   
   validateTextInput(node, isValid, hasUsedLastChance) {
