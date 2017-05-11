@@ -25,7 +25,9 @@ class QTIStyler {
   }
   
   setInputValidationState(userAnswers, solutions, hasUsedLastChance = false) {
-    const answerArray = userAnswers.map(QTIValidator.isValidUserAnswer.bind(QTIValidator, solutions));
+    const answerArray = userAnswers.map(
+      QTIValidator.isValidUserAnswer.bind(QTIValidator, solutions)
+    );
     let node, isValid, questionType;
     
     for(let i = 0; i < answerArray.length; i++) {
@@ -36,11 +38,11 @@ class QTIStyler {
       switch(questionType) {
         case QTIElements.extendedTextInteraction.IDENTIFIER:
         case QTIElements.textEntryInteraction.IDENTIFIER:
-          return this.validateTextInput(node, isValid, hasUsedLastChance);
+          this.validateTextInput(node, isValid, hasUsedLastChance);
           break;
           
         case QTIElements.inlineChoiceInteraction.IDENTIFIER:
-          return this.validateSelectInput(node, isValid, hasUsedLastChance);
+          this.validateSelectInput(node, isValid, hasUsedLastChance);
           break;
           
         case QTIElements.choiceInteraction.IDENTIFIER:
