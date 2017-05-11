@@ -85,12 +85,28 @@ class QTIStyler {
       if(inputs[i].checked) {
         this.setCorrectnessClass(inputs[i], isValid, false);
       }
-      
     }
   }
   
   validateCheckboxInput(node, isValid, hasUsedLastChance) {
-    console.info('validateCheckboxInput', node, isValid, hasUsedLastChance);
+    const inputs = node.getElementsByTagName('input');
+    const values = QTIValidator.getCheckedValues(node);
+
+    // empty incorrect value, do nothing
+    if(!values.length && !isValid) {
+      return;
+    }
+    
+    // last attempt or is valid - disable input
+    for(let i = 0; i < inputs.length; i++) {
+      if(isValid || hasUsedLastChance) {
+        this.disable(inputs[i]);
+        
+        if(inputs[i].checked) {
+          this.setCorrectnessClass(inputs[i], isValid, false);
+        }
+      }
+    }
   }
   
   validateTextInput(node, isValid, hasUsedLastChance) {
