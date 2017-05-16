@@ -32,7 +32,8 @@ class QTIStyler {
   }
   
   setInputValidationState(userAnswers, solutions, hasUsedLastChance = false) {
-    let node, isValid, questionType;
+    let node, isValid, questionType, identifier, solution;
+    
     const answerArray = userAnswers.map(
       QTIValidator.isValidUserAnswer.bind(QTIValidator, solutions)
     );
@@ -41,6 +42,7 @@ class QTIStyler {
       node = userAnswers[i].node;
       isValid = answerArray[i];
       questionType = node.getAttribute('question-type');
+      identifier = node.getAttribute('identifier');
       
       switch(questionType) {
         case QTIElements.extendedTextInteraction.IDENTIFIER:
@@ -57,7 +59,8 @@ class QTIStyler {
             this.validateRadioInput(node, isValid, hasUsedLastChance);
           }
           else {
-            this.validateCheckboxInput(node, isValid, hasUsedLastChance);
+            solution = QTIValidator.findSolutionByIdentifier(solutions, identifier);
+            this.validateCheckboxInput(node, solution.value, hasUsedLastChance);
           }
           break;
           
@@ -88,21 +91,23 @@ class QTIStyler {
     }
   }
   
-  validateCheckboxInput(node, isValid, hasUsedLastChance) {
+  validateCheckboxInput(node = {}, solutions = [], hasUsedLastChance = false) {
+    let isValid;
     const inputs = node.getElementsByTagName('input');
     const values = QTIValidator.getCheckedValues(node);
-
-    // empty incorrect value, do nothing
-    if(!values.length && !isValid) {
+    
+    // nothing selected, do nothing
+    if(!values.length) {
       return;
     }
     
-    // last attempt or is valid - disable input
-    for(let i = 0; i < inputs.length; i++) {
-      if(isValid || hasUsedLastChance) {
+    // validate only last attempt
+    if(hasUsedLastChance) {
+      for(let i = 0; i < inputs.length; i++) {
         this.disable(inputs[i]);
         
         if(inputs[i].checked) {
+          isValid = solutions.indexOf(inputs[i].id) !== -1;
           this.setCorrectnessClass(inputs[i], isValid, false);
         }
       }
