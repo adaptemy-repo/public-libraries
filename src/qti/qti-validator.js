@@ -110,8 +110,8 @@ class QTIValidator {
     });
   }
 
-  validateUserAnswersAgainstSolutions(userAnswers, solutions) {
-    QTIStyler.setInputValidationState(userAnswers, solutions);
+  validateUserAnswersAgainstSolutions(userAnswers, solutions, hasUsedLastChance) {
+    QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 

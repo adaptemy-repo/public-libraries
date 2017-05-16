@@ -37,7 +37,7 @@ class QTIStyler {
     const answerArray = userAnswers.map(
       QTIValidator.isValidUserAnswer.bind(QTIValidator, solutions)
     );
-    
+
     for(let i = 0; i < answerArray.length; i++) {
       node = userAnswers[i].node;
       isValid = answerArray[i];
