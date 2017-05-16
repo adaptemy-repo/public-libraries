@@ -84,8 +84,12 @@ class QTIValidator {
     });
   }
   
+  findSolutionByIdentifier(solutions, identifier) {
+    return solutions.find(s => s.identifier === identifier);
+  }
+  
   isValidUserAnswer(solutions, userAnswer) {
-    const solution = solutions.find(s => s.identifier === userAnswer.identifier);
+    const solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     
     if(solution.value.length !== userAnswer.answers.length) {
       return false;
