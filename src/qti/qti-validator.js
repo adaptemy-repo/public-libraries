@@ -111,8 +111,12 @@ class QTIValidator {
   }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions, hasUsedLastChance) {
-    QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
+    //QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
+  }
+  styleInputs(userAnswers, solutions, hasUsedLastChance) {
+    QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
+    //return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 
   findInputNodeByIdentifier(identifier) {
