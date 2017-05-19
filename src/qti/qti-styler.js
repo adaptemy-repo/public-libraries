@@ -1,11 +1,11 @@
 import QTIValidator from './qti-validator';
 import * as QTIElements from './qti-elements';
 
-const CORRECT = 'hide-correct';
-const INCORRECT = 'hide-incorrect';
+const CORRECT = 'correct';
+const INCORRECT = 'incorrect';
 
-const CORRECT_OPTION = 'hide-correct-value';
-const INCORRECT_OPTION = 'hide-incorrect-value';
+const CORRECT_OPTION = 'correct-value';
+const INCORRECT_OPTION = 'incorrect-value';
 
 class QTIStyler {
   resetStyles(node) {
