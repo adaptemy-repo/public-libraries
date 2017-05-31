@@ -113,13 +113,17 @@ class QTIParser {
     const answers = this.getAnswer(questionNode, humanReadable);
     
     return Object.keys(answers).map(identifier => {
-      let value = answers[identifier];
+      let value = answers[identifier].value;
       
       if(!Array.isArray(value)) {
         value = [value];
       }
       
-      return { identifier, value };
+      return {
+        identifier,
+        value,
+        anyOrder: answers[identifier].anyOrder
+      };
     });
   }
   
