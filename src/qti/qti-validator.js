@@ -88,15 +88,29 @@ class QTIValidator {
     return solutions.find(s => s.identifier === identifier);
   }
   
+  findAnyOrderSolutionValues(solutions) {
+    const anyOrder = this.filterAnyOrderSolutions(solutions);
+    return anyOrder.map(solution => solution.value);
+  }
+  
+  filterAnyOrderSolutions(solutions) {
+    return solutions.filter(solution => solution.anyOrder);
+  }
+  
   isValidUserAnswer(solutions, userAnswer) {
-    const solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
+    let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
+    let solutionValues = solution.value;
+
+    if(solution.anyOrder) {
+      solutionValues = this.findAnyOrderSolutionValues(solutions);
+    }
     
     if(solution.value.length !== userAnswer.answers.length) {
       return false;
     }
     
     return userAnswer.answers.every(answer => {
-      return solution.value.some(value => {
+      return solutionValues.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
 
@@ -112,7 +126,41 @@ class QTIValidator {
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions, hasUsedLastChance) {
     QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
+    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
+    
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
+  }
+  
+  santizeDuplicateAnyOrderAnswers(userAnswers, solutions) {
+    const sanitized = [];
+    const anyAnswer = [];
+    
+    userAnswers.forEach(userAnswer => {
+      let answer;
+      
+      // if not an anyOrder answer - ignore
+      if(!userAnswer.anyOrder) {
+        sanitized.push(userAnswer);
+      }
+      // an anyOrder answer
+      else {
+        // userAnswer was previously entered
+        if(anyAnswer.indexOf(userAnswer.value) !== -1) {
+          answer = Object.assign({}, userAnswer);
+          // unset duplicate answer value
+          answer.value = '';
+          
+          sanitized.push(answer);
+        }
+        // unique answer
+        else {
+          anyAnswer.push(userAnswer.value);
+          sanitized.push(userAnswer);
+        }
+      }
+    });
+    
+    return sanitized;
   }
 
   findInputNodeByIdentifier(identifier) {
