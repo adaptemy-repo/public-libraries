@@ -12,7 +12,7 @@ export default class choiceInteraction {
     this.shuffle = node.getAttribute('shuffle') === 'true';
     this.name = node.getAttribute('responseIdentifier');
     this.multiple = Number(node.getAttribute('maxChoices')) > 1;
-    this.answer = answers[this.name];
+    this.answer = answers[this.name].value;
   }
 
   getOptions() {

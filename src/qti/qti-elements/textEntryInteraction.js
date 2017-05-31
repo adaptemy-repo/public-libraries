@@ -8,7 +8,7 @@ export default class textEntryInteraction {
     this.maxLength = node.getAttribute('expectedLength');
     this.name = node.getAttribute('responseIdentifier');
     this.questionType = textEntryInteraction.IDENTIFIER;
-    this.answer = answers[this.name];
+    this.answer = answers[this.name].value;
   }
   
   get answerTypeAttribute() {
