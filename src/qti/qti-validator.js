@@ -134,32 +134,35 @@ class QTIValidator {
   santizeDuplicateAnyOrderAnswers(userAnswers, solutions) {
     const sanitized = [];
     const anyAnswer = [];
-    
-    userAnswers.forEach(userAnswer => {
-      let answer;
+
+    solutions.forEach(solution => {
+      const answer = userAnswers.find(
+        answer => answer.identifier === solution.identifier
+      );
+      
+      // if no answer was found for the solution, ignore
+      if(!answer) {
+        return;
+      }
       
       // if not an anyOrder answer - ignore
-      if(!userAnswer.anyOrder) {
-        sanitized.push(userAnswer);
+      if(!solution.anyOrder) {
+        sanitized.push(answer);
       }
       // an anyOrder answer
-      else {
-        // userAnswer was previously entered
-        if(anyAnswer.indexOf(userAnswer.value) !== -1) {
-          answer = Object.assign({}, userAnswer);
-          // unset duplicate answer value
-          answer.value = '';
-          
-          sanitized.push(answer);
+      else
+      {
+        // answer was previously entered (look only at first value)
+        if(anyAnswer.indexOf(answer.answers[0]) === -1) {
+          anyAnswer.push(answer.answers[0]);
         }
-        // unique answer
         else {
-          anyAnswer.push(userAnswer.value);
-          sanitized.push(userAnswer);
+          answer.answers = [ null ];
         }
+        sanitized.push(answer);
       }
     });
-    
+
     return sanitized;
   }
 
