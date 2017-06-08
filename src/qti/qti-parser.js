@@ -84,6 +84,9 @@ class QTIParser {
   }
   
   extractHTML(node) {
+    if (!node){
+      return '';
+    }
     const clone = node.cloneNode(true);
     const container = document.createElement('div');
 
