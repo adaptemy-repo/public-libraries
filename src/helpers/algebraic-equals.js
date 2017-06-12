@@ -1,6 +1,6 @@
 'use strict';
 
-function compare(a,b){
+export default function compare(a,b){
   var dimension = getDimension(a);
   var errorFound = false;
   dimension = dimension || 1; //set minimum value to 1, we want to test problems of 0 dimension
