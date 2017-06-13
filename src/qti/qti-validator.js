@@ -88,15 +88,29 @@ class QTIValidator {
     return solutions.find(s => s.identifier === identifier);
   }
   
+  findAnyOrderSolutionValues(solutions) {
+    const anyOrder = this.filterAnyOrderSolutions(solutions);
+    return anyOrder.map(solution => solution.value);
+  }
+  
+  filterAnyOrderSolutions(solutions) {
+    return solutions.filter(solution => solution.anyOrder);
+  }
+  
   isValidUserAnswer(solutions, userAnswer) {
-    const solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
+    let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
+    let solutionValues = solution.value;
+
+    if(solution.anyOrder) {
+      solutionValues = this.findAnyOrderSolutionValues(solutions);
+    }
     
     if(solution.value.length !== userAnswer.answers.length) {
       return false;
     }
     
     return userAnswer.answers.every(answer => {
-      return solution.value.some(value => {
+      return solutionValues.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
 
@@ -110,13 +124,49 @@ class QTIValidator {
     });
   }
 
-  validateUserAnswersAgainstSolutions(userAnswers, solutions, hasUsedLastChance) {
-    //QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
+
+  validateUserAnswersAgainstSolutions(userAnswers, solutions) {
+    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);    
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
+
   styleInputs(userAnswers, solutions, hasUsedLastChance) {
     QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
-    //return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
+  }
+  
+  santizeDuplicateAnyOrderAnswers(userAnswers, solutions) {
+    const sanitized = [];
+    const anyAnswer = [];
+
+    solutions.forEach(solution => {
+      const answer = userAnswers.find(
+        answer => answer.identifier === solution.identifier
+      );
+      
+      // if no answer was found for the solution, ignore
+      if(!answer) {
+        return;
+      }
+      
+      // if not an anyOrder answer - ignore
+      if(!solution.anyOrder) {
+        sanitized.push(answer);
+      }
+      // an anyOrder answer
+      else
+      {
+        // answer was previously entered (look only at first value)
+        if(anyAnswer.indexOf(answer.answers[0]) === -1) {
+          anyAnswer.push(answer.answers[0]);
+        }
+        else {
+          answer.answers = [ null ];
+        }
+        sanitized.push(answer);
+      }
+    });
+
+    return sanitized;
   }
 
   findInputNodeByIdentifier(identifier) {

@@ -84,6 +84,9 @@ class QTIParser {
   }
   
   extractHTML(node) {
+    if (!node){
+      return '';
+    }
     const clone = node.cloneNode(true);
     const container = document.createElement('div');
 
@@ -96,12 +99,14 @@ class QTIParser {
   
   getAnswer(questionNode, humanReadable = false) {
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    let key, value, answer = {};
+    let key, answer = {};
     
     for(let i = 0; i < nodes.length; i++) {
       key = nodes[i].getAttribute('identifier');
-      value = this.extractAnswerValue(nodes[i], questionNode, humanReadable);
-      answer[key] = value;
+      answer[key] = {
+        value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        anyOrder: nodes[i].getAttribute('any-order') === 'true'
+      };
     }
     
     return answer;
@@ -111,13 +116,17 @@ class QTIParser {
     const answers = this.getAnswer(questionNode, humanReadable);
     
     return Object.keys(answers).map(identifier => {
-      let value = answers[identifier];
+      let value = answers[identifier].value;
       
       if(!Array.isArray(value)) {
         value = [value];
       }
       
-      return { identifier, value };
+      return {
+        identifier,
+        value,
+        anyOrder: answers[identifier].anyOrder
+      };
     });
   }
   

@@ -6,7 +6,7 @@ export default class inlineChoiceInteraction {
 
     this.shuffle = node.getAttribute('shuffle') === 'true';
     this.name = node.getAttribute('responseIdentifier');
-    this.answer = answers[this.name];
+    this.answer = answers[this.name].value;
   }
 
   getOptions() {
