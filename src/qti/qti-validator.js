@@ -124,6 +124,7 @@ class QTIValidator {
     });
   }
 
+
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
     userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);    
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
