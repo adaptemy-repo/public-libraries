@@ -105,19 +105,22 @@ class QTIParser {
       key = nodes[i].getAttribute('identifier');
       answer[key] = {
         value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
-        anyOrder: nodes[i].getAttribute('any-order') === 'true'
+        anyOrder: nodes[i].getAttribute('any-order') === 'true',
+        containsAlternatives: this.containsAlternatives(nodes[i])
       };
     }
-    
     return answer;
+  }
+
+  containsAlternatives(qnNode){
+    return qnNode.getElementsByTagName('mapping').length >= 1;
   }
 
   getAnswerArray(questionNode, humanReadable = false) {
     const answers = this.getAnswer(questionNode, humanReadable);
-    
     return Object.keys(answers).map(identifier => {
       let value = answers[identifier].value;
-      
+      let containsAlternatives = answers[identifier].containsAlternatives;
       if(!Array.isArray(value)) {
         value = [value];
       }
@@ -125,6 +128,7 @@ class QTIParser {
       return {
         identifier,
         value,
+        containsAlternatives,
         anyOrder: answers[identifier].anyOrder
       };
     });
@@ -132,7 +136,7 @@ class QTIParser {
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
-    const values = [];
+    var values = [];
     
     if(!valueTags.length) {
       values.push('meerkat');
@@ -141,19 +145,17 @@ class QTIParser {
     else {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
       let nodes = Array.prototype.slice.call(valueTags);
-      nodes.concat(Array.prototype.slice.call(mapEntries));
-      
+      nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
       values = nodes.map(node => {
         return this.extractAnswerValueFromNode(
           node,
           questionNode,
           humanReadable
-        );;
+        );
       })
       // filter uniques
-      .filter((a, index) => nodex.indexOf(a) === index);
+      .filter((a, index, arr) => arr.indexOf(a) === index);
     }
-
     return values;
   }
   
