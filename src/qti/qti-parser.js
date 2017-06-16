@@ -99,11 +99,12 @@ class QTIParser {
   
   getAnswer(questionNode, humanReadable = false) {
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    let key, answer = {};
     
     for(let i = 0; i < nodes.length; i++) {
-      key = nodes[i].getAttribute('identifier');
-      answer[key] = {
+      let key = nodes[i].getAttribute('identifier');
+      let comparison = nodes[i].getAttribute('comparison') || 'default';
+      let answer[key] = {
+        comparison,
         value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
         anyOrder: nodes[i].getAttribute('any-order') === 'true'
       };
@@ -125,6 +126,7 @@ class QTIParser {
       return {
         identifier,
         value,
+        comparison: answers[identifier].comparison,
         anyOrder: answers[identifier].anyOrder
       };
     });
