@@ -99,11 +99,11 @@ class QTIParser {
   
   getAnswer(questionNode, humanReadable = false) {
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    
+    let answer = {};
     for(let i = 0; i < nodes.length; i++) {
       let key = nodes[i].getAttribute('identifier');
       let comparison = nodes[i].getAttribute('comparison') || 'default';
-      let answer[key] = {
+      answer[key] = {
         comparison,
         value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
         anyOrder: nodes[i].getAttribute('any-order') === 'true',

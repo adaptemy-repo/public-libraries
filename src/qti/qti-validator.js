@@ -118,7 +118,7 @@ class QTIValidator {
         const ansA = this.uniformatValue(value);
         const ansB = this.uniformatValue(answer);
         if(solution.comparison === 'algebraic') {
-          return algebraicEquals(ansA, ansB);
+          return algebraicEquals(value, answer);
         } else {
           const stringMatch = ansA === ansB;
           const numericMatch = Number(ansA) === Number(ansB);

@@ -180,5 +180,3 @@ function tokenize(str) {
   }
 
 }
-
-module.exports = compare;
