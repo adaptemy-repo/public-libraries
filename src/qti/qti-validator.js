@@ -106,7 +106,7 @@ class QTIValidator {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
-    if(solution.value.length !== userAnswer.answers.length) {
+    if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
     
@@ -131,7 +131,7 @@ class QTIValidator {
 
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
-    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);    
+    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 
