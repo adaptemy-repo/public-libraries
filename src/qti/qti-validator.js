@@ -106,7 +106,7 @@ class QTIValidator {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
-    if(solution.value.length !== userAnswer.answers.length) {
+    if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
     
@@ -118,7 +118,7 @@ class QTIValidator {
         const ansA = this.uniformatValue(value);
         const ansB = this.uniformatValue(answer);
         if(solution.comparison === 'algebraic') {
-          return algebraicEquals(ansA, ansB);
+          return algebraicEquals(value, answer);
         } else {
           const stringMatch = ansA === ansB;
           const numericMatch = Number(ansA) === Number(ansB);
@@ -131,7 +131,7 @@ class QTIValidator {
 
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
-    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);    
+    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 
