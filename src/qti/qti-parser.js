@@ -105,6 +105,7 @@ class QTIParser {
       key = nodes[i].getAttribute('identifier');
       answer[key] = {
         value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        caseSensitive: nodes[i].getAttribute('comparison') === 'case-sensitive',
         anyOrder: nodes[i].getAttribute('any-order') === 'true'
       };
     }
@@ -116,17 +117,7 @@ class QTIParser {
     const answers = this.getAnswer(questionNode, humanReadable);
     
     return Object.keys(answers).map(identifier => {
-      let value = answers[identifier].value;
-      
-      if(!Array.isArray(value)) {
-        value = [value];
-      }
-      
-      return {
-        identifier,
-        value,
-        anyOrder: answers[identifier].anyOrder
-      };
+      return Object.assign({ identifier }, answers[identifier]);
     });
   }
   
@@ -153,7 +144,8 @@ class QTIParser {
       }
     }
 
-    return value;
+    // always return an array
+    return Array.isArray(value) ? value : [value];
   }
   
   extractHumanReadableChoice(questionNode, identifier) {
