@@ -114,8 +114,8 @@ class QTIValidator {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
 
-        const ansA = this.uniformatValue(value);
-        const ansB = this.uniformatValue(answer);
+        const ansA = this.uniformatValue(value, answer.caseSensitive);
+        const ansB = this.uniformatValue(answer, answer.caseSensitive);
         const stringMatch = ansA === ansB;
         const numericMatch = Number(ansA) === Number(ansB);
 
@@ -214,10 +214,10 @@ class QTIValidator {
     return this.uniformatValue(answer) === this.uniformatValue(userAnswer);
   }
   
-  uniformatValue(value) {
+  uniformatValue(value, caseSensitive = false) {
     value = String(value);              // stringify
-    value = value.toLowerCase();        // cast to lowercase
     value = value.replace(/ /g, '');    // remove spaces
+    value = caseSensitive ? value : value.toLowerCase();
     
     // replace decimal separator
     if(this.decimalSeparator !== '.') {
