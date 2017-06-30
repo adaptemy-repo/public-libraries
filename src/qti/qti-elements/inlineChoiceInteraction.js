@@ -1,16 +1,23 @@
+import { sortArrayRandomly } from '../../helpers/pseudo-rng';
+
 export default class inlineChoiceInteraction {
   static IDENTIFIER = 'inlineChoiceInteraction';
 
-  constructor(node, answers) {
+  constructor(node, answers, seed) {
     this.node = node;
 
     this.shuffle = node.getAttribute('shuffle') === 'true';
+    this.seed = seed;
     this.name = node.getAttribute('responseIdentifier');
     this.answer = answers[this.name].value;
   }
 
   getOptions() {
-    return this.node.getElementsByTagName('inlineChoice');
+    const options = Array.prototype.slice.call(
+      this.node.getElementsByTagName('inlineChoice')
+    );
+
+    return this.seed ? sortArrayRandomly(this.seed, options) : options;
   }
 
   generateOption(node) {
