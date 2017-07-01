@@ -1,7 +1,7 @@
 export default class textEntryInteraction {
   static IDENTIFIER = 'textEntryInteraction';
 
-  constructor(node, answers) {
+  constructor(node, answers, seed) {
     this.node = node;
     this.className = 'qti-interaction qti-input';
 

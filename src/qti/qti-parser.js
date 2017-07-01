@@ -51,7 +51,7 @@ class QTIParser {
     return questions;
   }
   
-  convertQuestionToHTML(questionNode) {
+  convertQuestionToHTML(questionNode, seed) {
     let body = questionNode.getElementsByTagName(BODY_IDENTIFIER)[0] ||
       questionNode.getElementsByTagName(BODY_IDENTIFIER_BLOCK)[0];
       
@@ -60,12 +60,12 @@ class QTIParser {
     }
 
     const answers = this.getAnswer(questionNode);
-    body = this.replaceConvertableElements(body, answers);
+    body = this.replaceConvertableElements(body, answers, seed);
 
     return this.extractHTML(body);
   }
   
-  replaceConvertableElements(node, answers) {
+  replaceConvertableElements(node, answers, seed) {
     const clone = node.cloneNode(true);
     
     Object.keys(CONVERTABLE_ELEMENTS).forEach(function(key) {
@@ -75,7 +75,7 @@ class QTIParser {
       
       // empty stack from the top, items.length decreases with every iteration
       while(items.length > 0) {
-        convertable = new ConvertableElement(items[0], answers);
+        convertable = new ConvertableElement(items[0], answers, seed);
         items[0].parentNode.replaceChild(convertable.generateDOMNode(), items[0]);
       }
     });
