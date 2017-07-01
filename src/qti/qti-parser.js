@@ -99,25 +99,29 @@ class QTIParser {
   
   getAnswer(questionNode, humanReadable = false) {
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    let key, answer = {};
-    
+    let answer = {};
     for(let i = 0; i < nodes.length; i++) {
-      key = nodes[i].getAttribute('identifier');
+      let key = nodes[i].getAttribute('identifier');
+      let comparison = nodes[i].getAttribute('comparison') || 'default';
       answer[key] = {
+        comparison,
         value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
-        anyOrder: nodes[i].getAttribute('any-order') === 'true'
+        anyOrder: nodes[i].getAttribute('any-order') === 'true',
+        containsAlternatives: this.containsAlternatives(nodes[i])
       };
     }
-    
     return answer;
+  }
+
+  containsAlternatives(qnNode){
+    return qnNode.getElementsByTagName('mapping').length >= 1;
   }
 
   getAnswerArray(questionNode, humanReadable = false) {
     const answers = this.getAnswer(questionNode, humanReadable);
-    
     return Object.keys(answers).map(identifier => {
       let value = answers[identifier].value;
-      
+      let containsAlternatives = answers[identifier].containsAlternatives;
       if(!Array.isArray(value)) {
         value = [value];
       }
@@ -125,35 +129,36 @@ class QTIParser {
       return {
         identifier,
         value,
+        comparison: answers[identifier].comparison,
+        containsAlternatives,
         anyOrder: answers[identifier].anyOrder
       };
     });
   }
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
-    const nodes = answerNode.getElementsByTagName('value');
-    let node, value;
+    const valueTags = answerNode.getElementsByTagName('value');
+    var values = [];
     
-    // no answer, this is probably an authoring error
-    if (nodes.length === 0){
-      value = 'meerkat';
-    }
-    // single answer, most questions are in here
-    else if (nodes.length === 1){
-      node = nodes[0];
-      value = this.extractAnswerValueFromNode(node, questionNode, humanReadable);
+    if(!valueTags.length) {
+      values.push('meerkat');
     }
     // multiple answers
     else {
-      value = [];
-      for(let i = 0; i < nodes.length; i++) {
-        value.push(
-          this.extractAnswerValueFromNode(nodes[i], questionNode, humanReadable)
-        )
-      }
+      const mapEntries = answerNode.getElementsByTagName('mapEntry');
+      let nodes = Array.prototype.slice.call(valueTags);
+      nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
+      values = nodes.map(node => {
+        return this.extractAnswerValueFromNode(
+          node,
+          questionNode,
+          humanReadable
+        );
+      })
+      // filter uniques
+      .filter((a, index, arr) => arr.indexOf(a) === index);
     }
-
-    return value;
+    return values;
   }
   
   extractHumanReadableChoice(questionNode, identifier) {
@@ -169,6 +174,13 @@ class QTIParser {
       value = humanReadable ?
         this.extractHumanReadableChoice(questionNode, identifier) :
         identifier;
+    }
+    // <mapping>
+    //  <mapEntry makKEy="alternate value"/>
+    //  <mapEntry makKEy="alternate value2"/>
+    // </mapping>
+    else if(node.attributes.hasOwnProperty('mapKey')) {
+      value = node.attributes.mapKey;
     }
     else {
       value = this.extractHTML(node);
