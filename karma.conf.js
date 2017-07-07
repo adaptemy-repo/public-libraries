@@ -1,20 +1,27 @@
-module.exports = function(config) {
+const webpack = require('./webpack.conf');
+
+module.exports = function (config) {
   config.set({
-    plugins: [
-      'karma-mocha',
-      'karma-mocha-reporter',
-      'karma-chai',
-      'karma-babel-preprocessor',
-      'karma-phantomjs-launcher',
-    ],
-    frameworks: ['mocha', 'chai'],
-    reporters: ['mocha'],
-    preprocessors: {
-      'src/**/*.js': ['babel'],
-    },
+    basePath: '',
+    frameworks: ['mocha', 'chai', 'sinon'],
     files: [
-      'src/**/*.test.js'
+      { pattern: 'karma.bundle.js', watched: false }
     ],
-    browsers: ['PhantomJS']
+    exclude: [],
+    preprocessors: {
+      'index.js': ['webpack', 'sourcemap'],
+      'karma.bundle.js': ['webpack', 'sourcemap']
+    },
+    webpack: webpack,
+    webpackServer: {
+      noInfo: true // prevent console spamming when running in Karma!
+    },
+    reporters: ['mocha'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['PhantomJS'], // @TODO Change to Chrome at some point?
+    singleRun: true
   });
-}
+};
