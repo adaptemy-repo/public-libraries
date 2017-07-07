@@ -1,6 +1,7 @@
 import QTIParser from './qti-parser';
 import QTIStyler from './qti-styler';
 import * as QTIElements from './qti-elements';
+import algebraicEquals from '../helpers/algebraic-equals';
 
 const urlify = require('urlify').create();
 const MINIMAL_SECOND_CHANCE_RATING = 4;
@@ -105,7 +106,7 @@ class QTIValidator {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
-    if(solution.value.length !== userAnswer.answers.length) {
+    if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
     
@@ -116,17 +117,21 @@ class QTIValidator {
 
         const ansA = this.uniformatValue(value, answer.caseSensitive);
         const ansB = this.uniformatValue(answer, answer.caseSensitive);
-        const stringMatch = ansA === ansB;
-        const numericMatch = Number(ansA) === Number(ansB);
+        if(solution.comparison === 'algebraic') {
+          return algebraicEquals(value, answer);
+        } else {
+          const stringMatch = ansA === ansB;
+          const numericMatch = Number(ansA) === Number(ansB);
 
-        return stringMatch || numericMatch;
+          return stringMatch || numericMatch;
+        }
       });
     });
   }
 
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
-    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);    
+    userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
 

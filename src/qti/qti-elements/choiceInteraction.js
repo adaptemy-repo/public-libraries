@@ -1,3 +1,5 @@
+import { sortArrayRandomly } from '../../helpers/pseudo-rng';
+
 const CHECKBOX = 'checkbox';
 const RADIO = 'radio';
 
@@ -6,17 +8,22 @@ export default class choiceInteraction {
   static RADIO = RADIO;
   static CHECKBOX = CHECKBOX;
 
-  constructor(node, answers) {
+  constructor(node, answers, seed) {
     this.node = node;
 
     this.shuffle = node.getAttribute('shuffle') === 'true';
+    this.seed = seed;
     this.name = node.getAttribute('responseIdentifier');
     this.multiple = Number(node.getAttribute('maxChoices')) > 1;
     this.answer = answers[this.name].value;
   }
 
   getOptions() {
-    return this.node.getElementsByTagName('simpleChoice');
+    const options = Array.prototype.slice.call(
+      this.node.getElementsByTagName('simpleChoice')
+    );
+    
+    return this.seed ? sortArrayRandomly(this.seed, options) : options;
   }
 
   getPrompt() {
