@@ -1,4 +1,5 @@
 import * as CONVERTABLE_ELEMENTS from './qti-elements';
+import { extractHTML } from '../helpers/extract-html'; 
 
 const XML_MIME_TYPE = 'application/xhtml+xml';
 const XML_ARTEFACTS = [
@@ -84,17 +85,7 @@ class QTIParser {
   }
   
   extractHTML(node) {
-    if (!node){
-      return '';
-    }
-    const clone = node.cloneNode(true);
-    const container = document.createElement('div');
-
-    while(clone.childNodes.length > 0) {
-      container.appendChild(clone.childNodes[0]);
-    }
-
-    return container.innerHTML;
+    return extractHTML(node);
   }
   
   getAnswer(questionNode, humanReadable = false) {
