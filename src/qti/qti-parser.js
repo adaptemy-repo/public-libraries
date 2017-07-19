@@ -149,7 +149,8 @@ class QTIParser {
     }
 
     // always return an array
-    return Array.isArray(value) ? value : [value];
+    return values;
+    //return Array.isArray(value) ? value : [value];
   }
   
   extractHumanReadableChoice(questionNode, identifier) {

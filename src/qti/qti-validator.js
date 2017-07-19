@@ -115,8 +115,8 @@ class QTIValidator {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
 
-        const ansA = this.uniformatValue(value, answer.caseSensitive);
-        const ansB = this.uniformatValue(answer, answer.caseSensitive);
+        const ansA = this.uniformatValue(value, solution.caseSensitive);
+        const ansB = this.uniformatValue(answer, solution.caseSensitive);
         if(solution.comparison === 'algebraic') {
           return algebraicEquals(value, answer);
         } else {
