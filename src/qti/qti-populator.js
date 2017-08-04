@@ -9,20 +9,27 @@ class QTIPopulator {
   }
   
   restoreUserAnswers(inputNode, userAnswers) {
-    userAnswers.forEach(answer => this.populateInputNode(inputNode, answer));
+    userAnswers.forEach(answer => {
+      let questionNode = inputNode;
+      if(inputNode.getAttribute('identifier') !== answer.identifier) {
+        questionNode = inputNode.querySelector(`identifier=${answer.identifier}`);
+      }
+
+      this.populateInputNode(questionNode, answer)
+    });
   }
   
-  populateInputNode(inputNode, variation) {
-    const questionType = inputNode.getAttribute('question-type');
+  populateInputNode(questionNode, variation) {
+    const questionType = questionNode.getAttribute('question-type');
     const { answers, identifier } = variation;
 
     switch(questionType) {
       case QTIElements.extendedTextInteraction.IDENTIFIER:
       case QTIElements.textEntryInteraction.IDENTIFIER:
-        return inputNode.value = answers[0];
+        return questionNode.value = answers[0];
         
       case QTIElements.inlineChoiceInteraction.IDENTIFIER:
-        const select = inputNode.getElementsByTagName('select')[0];
+        const select = questionNode.getElementsByTagName('select')[0];
       
         for(let i = 0; i < select.options.length; i++) {
           if(select.options[i].value === answers[0]) {
@@ -43,7 +50,7 @@ class QTIPopulator {
         return;
     }
     
-    throw 'The provided inputNode did not contain a valid question-type';    
+    throw 'The provided questionNode did not contain a valid question-type';    
   }
 }
 
