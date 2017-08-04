@@ -5,7 +5,7 @@ class QTIPopulator {
   getAnswersForLogging(inputNode) {
     return QTIValidator
       .getAllUserAnswers(inputNode)
-      .map(({ identifier, answers }) => { identifier, answers });
+      .map(({ identifier, answers }) => ({ identifier, answers }));
   }
   
   restoreUserAnswers(inputNode, userAnswers) {
