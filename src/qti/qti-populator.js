@@ -12,13 +12,13 @@ class QTIPopulator {
     userAnswers.forEach(answer => {
       let questionNode = inputNode;
       if(inputNode.getAttribute('identifier') !== answer.identifier) {
-        questionNode = inputNode.querySelector(`identifier=${answer.identifier}`);
+        questionNode = inputNode.querySelector(`[identifier="${answer.identifier}"]`);
       }
 
-      this.populateInputNode(questionNode, answer)
+      this.populateInputNode(questionNode, answer);
     });
   }
-  
+
   populateInputNode(questionNode, variation) {
     const questionType = questionNode.getAttribute('question-type');
     const { answers, identifier } = variation;
@@ -39,7 +39,7 @@ class QTIPopulator {
         return;
         
       case QTIElements.choiceInteraction.IDENTIFIER:
-        const inputs = node.getElementsByTagName('input');
+        const inputs = questionNode.getElementsByTagName('input');
         const values = [];
         
         for(let i = 0; i < inputs.length; i++) {
