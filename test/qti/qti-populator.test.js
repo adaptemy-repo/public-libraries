@@ -2,6 +2,7 @@ import { QTIParser, QTIPopulator } from '../../';
 import DocumentMock from '../mocks/document.mock.json';
 
 const textMockIdentifier = '2157296d-6410-40ef-c128-e4fe8ff0a81f';
+const textMockValue = 'very test mock';
 
 const selectMockIdentifier = 'f6d637c5-3e83-4326-d6c7-e0f8ae9b478f';
 const selectMockValue = 'id-796035d4-aa73-4f0e-d1c6-b51a89a5f2ee';
@@ -16,10 +17,16 @@ const checkboxMockValues = [
   'id-b021adaf-0e01-4fdd-a26f-7de0d4b9f68d'
 ];
 
+const mockPopulateData = [
+  { identifier: textMockIdentifier, answers: [textMockValue] },
+  { identifier: selectMockIdentifier, answers: [selectMockValue] },
+  { identifier: radioMockIdentifier, answers: [radioMockValue] },
+  { identifier: checkboxMockIdentifier, answers: checkboxMockValues },
+];
 
 // @TODO add code coveragenpm 
-describe.only('QTIPopulator', () => {
-  let body, questions;
+describe('QTIPopulator', () => {
+  let body, questions, userAnswers;
 
   beforeEach('populate questions', () => {
     questions = QTIParser.convertStringToQuestions(DocumentMock.content);
@@ -31,7 +38,6 @@ describe.only('QTIPopulator', () => {
   });
 
   describe('QTIPopulator.getAnswersForLogging()', () => {
-    let userAnswers;
     beforeEach('extract user answers', () => {
       userAnswers = QTIPopulator.getAnswersForLogging(body);
     });
@@ -45,11 +51,10 @@ describe.only('QTIPopulator', () => {
     
     describe('When a TEXT field is manually populated', () => {
       let textInput;
-      const textInputMock = 'very test mock';
       
       beforeEach('populate text field', (done) => {
         textInput = body.querySelector(`[identifier="${textMockIdentifier}"]`);
-        textInput.value = textInputMock;
+        textInput.value = textMockValue;
         setTimeout(done);
       });
             
@@ -61,7 +66,7 @@ describe.only('QTIPopulator', () => {
         
         expect(Array.isArray(userAnswer.answers)).to.be.true;
         expect(userAnswer.answers.length).to.equal(1);
-        expect(userAnswer.answers[0]).to.equal(textInputMock);
+        expect(userAnswer.answers[0]).to.equal(textMockValue);
       });
     });
     
@@ -131,6 +136,26 @@ describe.only('QTIPopulator', () => {
 
         checkboxMockValues.forEach(value => {
           expect(userAnswer.answers.indexOf(value)).to.not.equal(-1);
+        });
+      });
+    });
+  });
+
+  describe('QTIPopulator.restoreUserAnswers()', () => {
+    beforeEach('populate body', done => {
+      QTIPopulator.restoreUserAnswers(body, mockPopulateData);
+      setTimeout(done);
+    });
+    
+    beforeEach('getAnswers', () => {
+      userAnswers = QTIPopulator.getAnswersForLogging(body);
+    });
+    
+    it('should populate data correctly', () => {
+      mockPopulateData.forEach(mock => {
+        const extractedAnswer = userAnswers.find(answer => answer.identifier === mock.identifier);
+        mock.answers.forEach(value => {
+          expect(mock.answers.indexOf(value)).to.not.equal(-1);
         });
       });
     });
