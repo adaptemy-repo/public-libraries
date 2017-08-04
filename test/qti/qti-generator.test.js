@@ -1,5 +1,4 @@
-import QTIGenerator from '../qti-generator';
-import assert from 'assert';
+import { QTIGenerator } from '../../';
 
 let generator;
 const answersMock = [{
