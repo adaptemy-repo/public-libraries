@@ -105,8 +105,8 @@ class QTIParser {
     return answer;
   }
 
-  containsAlternatives(qnNode){
-    return qnNode.getElementsByTagName('mapping').length >= 1;
+  containsAlternatives(questionNode) {
+    return questionNode.getElementsByTagName('mapping').length > 0;
   }
 
   getAnswerArray(questionNode, humanReadable = false) {
@@ -118,25 +118,22 @@ class QTIParser {
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
-    const values = [];
+    let values = ['meerkat'];
     
-    if(!valueTags.length) {
-      values.push('meerkat');
-    }
     // multiple answers
-    else {
+    if(valueTags.length > 0) {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
       let nodes = Array.prototype.slice.call(valueTags);
       nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
-      nodes.forEach(node =>
-        values.push(this.extractAnswerValueFromNode(
-          node,
-          questionNode,
-          humanReadable
-        ))
-      );
-      // filter uniques
-      .filter((a, index, arr) => arr.indexOf(a) === index);
+      values = nodes
+        .map(node =>
+          this.extractAnswerValueFromNode(
+            node,
+            questionNode,
+            humanReadable
+          )
+        )
+        .filter((a, index, arr) => arr.indexOf(a) === index);
     }
 
     return values;
@@ -157,8 +154,8 @@ class QTIParser {
         identifier;
     }
     // <mapping>
-    //  <mapEntry makKEy="alternate value"/>
-    //  <mapEntry makKEy="alternate value2"/>
+    //  <mapEntry mapKey="alternate value"/>
+    //  <mapEntry mapKey="alternate value2"/>
     // </mapping>
     else if(node.attributes.hasOwnProperty('mapKey')) {
       value = node.attributes.mapKey;
