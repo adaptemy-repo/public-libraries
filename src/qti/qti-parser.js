@@ -127,7 +127,7 @@ class QTIParser {
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
-    var values = [];
+    const values = [];
     
     if(!valueTags.length) {
       values.push('meerkat');
@@ -137,20 +137,18 @@ class QTIParser {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
       let nodes = Array.prototype.slice.call(valueTags);
       nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
-      values = nodes.map(node => {
-        return this.extractAnswerValueFromNode(
+      nodes.forEach(node =>
+        values.push(this.extractAnswerValueFromNode(
           node,
           questionNode,
           humanReadable
-        );
-      })
+        ))
+      );
       // filter uniques
       .filter((a, index, arr) => arr.indexOf(a) === index);
     }
 
-    // always return an array
     return values;
-    //return Array.isArray(value) ? value : [value];
   }
   
   extractHumanReadableChoice(questionNode, identifier) {
