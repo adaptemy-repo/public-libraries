@@ -36,6 +36,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.3",
     "mocha": "^3.4.2",
+    "raw-loader": "^0.5.1",
     "requirejs": "^2.3.3",
     "sinon": "^2.3.6",
     "source-map-loader": "^0.2.1",
