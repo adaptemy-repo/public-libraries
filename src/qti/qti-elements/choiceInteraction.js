@@ -11,6 +11,7 @@ export default class choiceInteraction {
   constructor(node, answers, seed) {
     this.node = node;
 
+    this.containsImages = this.isContainingImages(node);
     this.shuffle = node.getAttribute('shuffle') === 'true';
     this.seed = seed;
     this.name = node.getAttribute('responseIdentifier');
@@ -119,8 +120,11 @@ export default class choiceInteraction {
     return container;
   }
 
-  containsImages(){
-    return this.node.innerHTML.indexOf('<img') > -1;
+  isContainingImages(node) {
+    const container = document.createElement('div');
+    container.appendChild(node.cloneNode());
+    
+    return container.innerHTML.indexOf('<img') !== -1;
   }
 
   generateDOMNode() {
@@ -132,7 +136,7 @@ export default class choiceInteraction {
     container.setAttribute('interaction-type', this.type);
     container.setAttribute('identifier', this.name);
     
-    const optionalImgClass = this.containsImages() ? ' with-image' : '';
+    const optionalImgClass = this.containsImages ? ' with-image' : '';
     container.className = 'qti-interaction qti-choice-combo ' + this.className + optionalImgClass;
 
     if(prompt) {
@@ -140,7 +144,7 @@ export default class choiceInteraction {
     }
 
     for(let i = 0; i < options.length; i++) {
-      if (this.containsImages() && this.type === RADIO){
+      if (this.containsImages && this.type === RADIO){
         container.appendChild(this.generateOptionImg(options[i]));
       }
       else{
