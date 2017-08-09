@@ -102,6 +102,10 @@ class QTIValidator {
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     let solutionValues = solution.value;
 
+    if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
+      return false;
+    }
+
     if(solution.anyOrder) {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
