@@ -9,6 +9,7 @@ export default class textEntryInteraction {
     this.name = node.getAttribute('responseIdentifier');
     this.questionType = textEntryInteraction.IDENTIFIER;
     this.answer = answers[this.name].value;
+    this.comparison = answers[this.name].comparison;
   }
   
   get answerTypeAttribute() {
@@ -40,6 +41,7 @@ export default class textEntryInteraction {
     input.setAttribute('type', 'text');
     input.setAttribute('answer-length', this.answerLength);
     input.setAttribute('question-type', this.questionType);
+    input.setAttribute('comparison', this.comparison);
     input.setAttribute(this.answerTypeAttribute, true);
 
     return input;
