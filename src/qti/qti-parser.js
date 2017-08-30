@@ -12,6 +12,8 @@ const BODY_IDENTIFIER = 'itemBody';
 const BODY_IDENTIFIER_BLOCK = 'itemInteractionBody';
 const FEEDBACK_IDENTIFIER = 'feedbackBlock';
 const ANSWER_IDENTIFIER = 'responseDeclaration';
+const RANGE_MIN_IDENTIFIER = 'minValue';
+const RANGE_MAX_IDENTIFIER = 'maxValue';
 
 class QTIParser {
   constructor() {
@@ -94,15 +96,36 @@ class QTIParser {
     for(let i = 0; i < nodes.length; i++) {
       let key = nodes[i].getAttribute('identifier');
       let comparison = nodes[i].getAttribute('comparison') || 'default';
+      let rangeValue = this.extractRangeValue(nodes[i]);
+
       answer[key] = {
         comparison,
-        value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        value: rangeValue || this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        isRange: !!rangeValue,
         caseSensitive: nodes[i].getAttribute('comparison') === 'case-sensitive',
         anyOrder: nodes[i].getAttribute('any-order') === 'true',
-        containsAlternatives: this.containsAlternatives(nodes[i])
+        containsAlternatives: this.containsAlternatives(nodes[i]),
       };
     }
     return answer;
+  }
+
+  extractRangeValue(answerNode) {
+    const minNode = answerNode.getElementsByTagName(RANGE_MIN_IDENTIFIER)[0];
+    const maxNode = answerNode.getElementsByTagName(RANGE_MAX_IDENTIFIER)[0];
+
+    if(minNode && maxNode) {
+      const min = parseFloat(minNode.textContent);
+      const max = parseFloat(maxNode.textContent);
+
+      if(Number.isFinite(min) && Number.isFinite(max)) {
+        return [min, max].sort();
+      }
+    }
+  }
+
+  findAnswerNode(questionNode, identifier) {
+    return questionNode.querySelector(`responseDeclaration[identifier="${identifier}"]`);
   }
 
   containsAlternatives(questionNode) {
