@@ -59,8 +59,8 @@ describe('QTIParser', () => {
             });
             
             it('provided values should always be numbers', () => {
-              expect(Number.isFinite(parseFloat(answer.value[0]))).to.be.true;
-              expect(Number.isFinite(parseFloat(answer.value[1]))).to.be.true;
+              expect(Number.isFinite(answer.value[0])).to.be.true;
+              expect(Number.isFinite(answer.value[1])).to.be.true;
             });
             
             it('range should be extracted properly', () => {

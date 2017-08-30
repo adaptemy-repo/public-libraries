@@ -119,7 +119,7 @@ class QTIParser {
       const max = parseFloat(maxNode.textContent);
 
       if(Number.isFinite(min) && Number.isFinite(max)) {
-        return [min, max].sort((a, b) => a > b);
+        return [min, max].sort((a, b) => a - b);
       }
     }
   }

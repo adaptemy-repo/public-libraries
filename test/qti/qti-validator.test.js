@@ -23,11 +23,11 @@ const containsAlternativesSolutions = [
 ];
 
 const rangeSolution = [
-  { identifier: 'test', value: [15, 30], isRange: true }
+  { identifier: 'test', value: [11, 100], isRange: true }
 ];
 
 const invalidRangeSolution = [
-  { identifier: 'test', value: [30, 15], isRange: true }
+  { identifier: 'test', value: [100, 11], isRange: true }
 ];
 
 describe('QTIValidator', () => {
@@ -78,9 +78,9 @@ describe('QTIValidator', () => {
       it('should invalidate values outside of the range', () => {
         expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(0))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(1))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(14.9999))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(30.0001))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(35))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(10.9999))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(100.0001))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(rangeSolution, answer(105))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(rangeSolution, answer('a'))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(rangeSolution, answer([]))).to.be.false;
       });
@@ -108,18 +108,19 @@ describe('QTIValidator', () => {
       it('should invalidate properly values outside of the range', () => {
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(0))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(1))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(14.9999))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(30.0001))).to.be.false;
-        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(35))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(10.9999))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(100.0001))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(105))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer('a'))).to.be.false;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer([]))).to.be.false;
       });
 
       it('should validate properly values inside the range', () => {
-        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(15))).to.be.true;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(11))).to.be.true;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(20))).to.be.true;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(25))).to.be.true;
         expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(30))).to.be.true;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(100))).to.be.true;
       });
     });
 
