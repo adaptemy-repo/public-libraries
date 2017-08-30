@@ -26,6 +26,10 @@ const rangeSolution = [
   { identifier: 'test', value: [15, 30], isRange: true }
 ];
 
+const invalidRangeSolution = [
+  { identifier: 'test', value: [30, 15], isRange: true }
+];
+
 describe('QTIValidator', () => {
   let body, questions;
   
@@ -89,6 +93,35 @@ describe('QTIValidator', () => {
       });
     });
   
+    describe('when validating against an unsorted solution range', () => {
+      const answer = val => ({ identifier: 'test', answers: [val] });
+
+      beforeEach('generate body HTML from range XML', () => {
+        questions = QTIParser.convertStringToQuestions(rangeAnswerXmlMock);
+        body = document.createElement('body');
+        
+        questions.forEach(questionNode => {
+          body.innerHTML += QTIParser.convertQuestionToHTML(questionNode);
+        });
+      });
+
+      it('should invalidate properly values outside of the range', () => {
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(0))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(1))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(14.9999))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(30.0001))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(35))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer('a'))).to.be.false;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer([]))).to.be.false;
+      });
+
+      it('should validate properly values inside the range', () => {
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(15))).to.be.true;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(20))).to.be.true;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(25))).to.be.true;
+        expect(QTIValidator.isValidUserAnswer(invalidRangeSolution, answer(30))).to.be.true;
+      });
+    });
 
   });
 });

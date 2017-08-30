@@ -111,7 +111,7 @@ class QTIValidator {
     }
     
     if(solution.isRange) {
-      const [min, max] = solution.value;
+      const [min, max] = solution.value.sort();
       return userAnswer.answers.every(value => {
         value = parseFloat(value);
         if(isNaN(value)) {
