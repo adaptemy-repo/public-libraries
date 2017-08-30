@@ -110,12 +110,6 @@ class QTIValidator {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
-    if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
-      if(!solution.isRange) {
-        return false;
-      }
-    }
-
     if(solution.isRange) {
       const [min, max] = solution.value;
       return userAnswer.answers.every(value => {
@@ -127,7 +121,11 @@ class QTIValidator {
         return value >= min && value <= max; 
       });
     }
-    
+
+    if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
+      return false;
+    }
+
     return userAnswer.answers.every(answer => {
       return solutionValues.some(value => {
         // @ATTENTION no need to cast to Number!
