@@ -111,7 +111,21 @@ class QTIValidator {
     }
     
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
-      return false;
+      if(!solution.isRange) {
+        return false;
+      }
+    }
+
+    if(solution.isRange) {
+      const [min, max] = solution.value;
+      return userAnswer.answers.every(value => {
+        value = parseFloat(value);
+        if(isNaN(value)) {
+          return false;
+        }
+
+        return value >= min && value <= max; 
+      });
     }
     
     return userAnswer.answers.every(answer => {
@@ -192,7 +206,13 @@ class QTIValidator {
     return Array.isArray('item') ? 'array' : typeof item;
   }
 
+  /*
+  * @DEPRICATED
+  */
   validateAnswer(inputNode, questionNode) {
+    console.log('QTIValidator.validateAnswer() is depricated and will be removed in next versions');
+    console.log('QTIValidator.isValidUserAnswer() replaces QTIValidator.validateAnswer()');
+
     let result;
     
     if(!inputNode || !questionNode) {
