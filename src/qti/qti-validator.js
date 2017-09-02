@@ -18,10 +18,6 @@ class QTIValidator {
     this.decimalSeparator = separator;
     return this;
   }
-
-  areAlgebraiclyEqual(term1, term2){
-    return algebraicEquals(term1,term2);
-  }
   
   extractUserAnswer(inputNode) {
     const questionType = inputNode.getAttribute('question-type');
