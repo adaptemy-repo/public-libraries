@@ -18,10 +18,6 @@ class QTIValidator {
     this.decimalSeparator = separator;
     return this;
   }
-
-  areAlgebraiclyEqual(term1, term2){
-    return algebraicEquals(term1,term2);
-  }
   
   extractUserAnswer(inputNode) {
     const questionType = inputNode.getAttribute('question-type');
@@ -29,9 +25,6 @@ class QTIValidator {
     switch(questionType) {
       case QTIElements.extendedTextInteraction.IDENTIFIER:
       case QTIElements.textEntryInteraction.IDENTIFIER:
-        if (inputNode.getAttribute('comparison') === 'latex'){
-          return inputNode.getAttribute('value');
-        }
         return inputNode.value;
         
       case QTIElements.inlineChoiceInteraction.IDENTIFIER:
