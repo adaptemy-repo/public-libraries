@@ -1,5 +1,4 @@
-import QTIGenerator from '../qti-generator';
-import assert from 'assert';
+import { QTIGenerator } from '../../';
 
 let generator;
 const answersMock = [{
@@ -9,23 +8,23 @@ const answersMock = [{
   "comparison": 'algebraic'
 }];
 
-describe('QTI Generator', () => {
-  beforeEach(() => {
+describe('QTIGenerator', () => {
+  beforeEach('create a new QTI generator', () => {
     generator = new QTIGenerator();
   });
   
   describe('by default', () => {
-    it('#.answers should be an empty object', () => {
+    it('QTIGenerator.answers should be an empty object', () => {
       expect(generator.answers).to.be.an('object').and.be.empty;
     });
   });
   
-  describe('#.setAnswers(answers)', () => {
-    beforeEach(() => {
+  describe('QTIGenerator.setAnswers(answers)', () => {
+    beforeEach('set answers', () => {
       generator.setAnswers(answersMock);
     });
     
-    it('should set #.answers grouped by identifier', () => {
+    it('should set QTIGenerator.answers grouped by identifier', () => {
       expect(generator.answers).to.be.an('object').and.not.be.empty;
       answersMock.forEach(mock => {
         expect(generator.answers[mock.identifier]).to.be.an('array');
@@ -34,10 +33,10 @@ describe('QTI Generator', () => {
     });
   });
   
-  describe('#.toXML()', () => {
+  describe('QTIGenerator.toXML()', () => {
     let xml;
     
-    beforeEach(() => {
+    beforeEach('set answers and generate XML', () => {
       generator.setAnswers(answersMock);
       xml = generator.toXML();
     });

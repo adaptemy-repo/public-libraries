@@ -105,21 +105,38 @@ class QTIValidator {
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     let solutionValues = solution.value;
 
+    if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
+      return false;
+    }
+
     if(solution.anyOrder) {
       solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
+    if(solution.isRange) {
+      const [min, max] = solution.value.sort((a, b) => a - b);
+
+      return userAnswer.answers.every(value => {
+        value = parseFloat(value);
+        if(isNaN(value)) {
+          return false;
+        }
+
+        return value >= min && value <= max; 
+      });
+    }
+
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
-    
+
     return userAnswer.answers.every(answer => {
       return solutionValues.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
 
-        const ansA = this.uniformatValue(value);
-        const ansB = this.uniformatValue(answer);
+        const ansA = this.uniformatValue(value, solution.caseSensitive);
+        const ansB = this.uniformatValue(answer, solution.caseSensitive);
         if(solution.comparison === 'algebraic') {
           return algebraicEquals(value, answer);
         } else {
@@ -191,7 +208,13 @@ class QTIValidator {
     return Array.isArray('item') ? 'array' : typeof item;
   }
 
+  /*
+  * @DEPRICATED
+  */
   validateAnswer(inputNode, questionNode) {
+    console.log('QTIValidator.validateAnswer() is depricated and will be removed in next versions');
+    console.log('QTIValidator.isValidUserAnswer() replaces QTIValidator.validateAnswer()');
+
     let result;
     
     if(!inputNode || !questionNode) {
@@ -222,10 +245,10 @@ class QTIValidator {
     return this.uniformatValue(answer) === this.uniformatValue(userAnswer);
   }
   
-  uniformatValue(value) {
+  uniformatValue(value, caseSensitive = false) {
     value = String(value);              // stringify
-    value = value.toLowerCase();        // cast to lowercase
     value = value.replace(/ /g, '');    // remove spaces
+    value = caseSensitive ? value : value.toLowerCase();
     
     // replace decimal separator
     if(this.decimalSeparator !== '.') {

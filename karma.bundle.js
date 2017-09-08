@@ -1,2 +1,2 @@
-let context = require.context('./src', true, /\.test(s)?\.js/);
+let context = require.context('./test', true, /\.test(s)?\.js/);
 context.keys().forEach(context);

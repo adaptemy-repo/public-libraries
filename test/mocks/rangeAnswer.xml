@@ -1,0 +1,44 @@
+<assessmentTest xmlns:mml="http://www.w3.org/1998/Math/MathML">
+  <assessmentItem>
+    <LOM>
+      <general>
+        <identifier>368e1876-0778-419d-f823-b2cf86d4f9e0</identifier>
+      </general>
+      <educational>
+        <difficulty><?fontoxml-text-placeholder text="type the difficulty level…"?></difficulty>
+      </educational>
+    </LOM>
+    <itemInteractionBody>
+      <p>What percentage of this pie chart is orange?</p><img src="pid:::image:::ce5eec70-1b31-4576-9ab6-d92620586807"/><p/><extendedTextInteraction expectedLength="10" responseIdentifier="0360bd9d-c569-4c0a-a66a-a9817855ad48"/></itemInteractionBody>
+    <responseDeclaration identifier="0360bd9d-c569-4c0a-a66a-a9817855ad48">
+      <correctResponse>
+        <minValue>11</minValue>
+        <maxValue>100</maxValue>
+      </correctResponse>
+    </responseDeclaration>
+    <feedbackBlock identifier="SOLUTION">
+      <p>Approximately 25% of the pie chart is orange</p>
+    </feedbackBlock>
+  </assessmentItem>
+  <assessmentItem>
+    <LOM>
+      <general>
+        <identifier>368e1876-0778-419d-f823-b2cf86d4f9e0</identifier>
+      </general>
+      <educational>
+        <difficulty><?fontoxml-text-placeholder text="type the difficulty level…"?></difficulty>
+      </educational>
+    </LOM>
+    <itemInteractionBody>
+      <p>What percentage of this pie chart is orange?</p><img src="pid:::image:::ce5eec70-1b31-4576-9ab6-d92620586807"/><p/><extendedTextInteraction expectedLength="10" responseIdentifier="0360bd9d-c569-4c0a-a66a-a9817855ad48"/></itemInteractionBody>
+    <responseDeclaration identifier="0360bd9d-c569-4c0a-a66a-a9817855ad48">
+      <correctResponse>
+        <minValue>100</minValue>
+        <maxValue>11</maxValue>
+      </correctResponse>
+    </responseDeclaration>
+    <feedbackBlock identifier="SOLUTION">
+      <p>Approximately 25% of the pie chart is orange</p>
+    </feedbackBlock>
+  </assessmentItem>
+</assessmentTest>

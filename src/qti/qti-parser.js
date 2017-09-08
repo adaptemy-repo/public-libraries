@@ -12,6 +12,8 @@ const BODY_IDENTIFIER = 'itemBody';
 const BODY_IDENTIFIER_BLOCK = 'itemInteractionBody';
 const FEEDBACK_IDENTIFIER = 'feedbackBlock';
 const ANSWER_IDENTIFIER = 'responseDeclaration';
+const RANGE_MIN_IDENTIFIER = 'minValue';
+const RANGE_MAX_IDENTIFIER = 'maxValue';
 
 class QTIParser {
   constructor() {
@@ -94,61 +96,69 @@ class QTIParser {
     for(let i = 0; i < nodes.length; i++) {
       let key = nodes[i].getAttribute('identifier');
       let comparison = nodes[i].getAttribute('comparison') || 'default';
+      let rangeValue = this.extractRangeValue(nodes[i]);
+
       answer[key] = {
         comparison,
-        value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        value: rangeValue || this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        isRange: !!rangeValue,
+        caseSensitive: nodes[i].getAttribute('comparison') === 'case-sensitive',
         anyOrder: nodes[i].getAttribute('any-order') === 'true',
-        containsAlternatives: this.containsAlternatives(nodes[i])
+        containsAlternatives: this.containsAlternatives(nodes[i]),
       };
     }
     return answer;
   }
 
-  containsAlternatives(qnNode){
-    return qnNode.getElementsByTagName('mapping').length >= 1;
+  extractRangeValue(answerNode) {
+    const minNode = answerNode.getElementsByTagName(RANGE_MIN_IDENTIFIER)[0];
+    const maxNode = answerNode.getElementsByTagName(RANGE_MAX_IDENTIFIER)[0];
+
+    if(minNode && maxNode) {
+      const min = parseFloat(minNode.textContent);
+      const max = parseFloat(maxNode.textContent);
+
+      if(Number.isFinite(min) && Number.isFinite(max)) {
+        return [min, max].sort((a, b) => a - b);
+      }
+    }
+  }
+
+  findAnswerNode(questionNode, identifier) {
+    return questionNode.querySelector(`responseDeclaration[identifier="${identifier}"]`);
+  }
+
+  containsAlternatives(questionNode) {
+    return questionNode.getElementsByTagName('mapping').length > 0;
   }
 
   getAnswerArray(questionNode, humanReadable = false) {
     const answers = this.getAnswer(questionNode, humanReadable);
     return Object.keys(answers).map(identifier => {
-      let value = answers[identifier].value;
-      let containsAlternatives = answers[identifier].containsAlternatives;
-      if(!Array.isArray(value)) {
-        value = [value];
-      }
-      
-      return {
-        identifier,
-        value,
-        comparison: answers[identifier].comparison,
-        containsAlternatives,
-        anyOrder: answers[identifier].anyOrder
-      };
+      return Object.assign({ identifier }, answers[identifier]);
     });
   }
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
-    var values = [];
+    let values = ['meerkat'];
     
-    if(!valueTags.length) {
-      values.push('meerkat');
-    }
     // multiple answers
-    else {
+    if(valueTags.length > 0) {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
       let nodes = Array.prototype.slice.call(valueTags);
       nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
-      values = nodes.map(node => {
-        return this.extractAnswerValueFromNode(
-          node,
-          questionNode,
-          humanReadable
-        );
-      })
-      // filter uniques
-      .filter((a, index, arr) => arr.indexOf(a) === index);
+      values = nodes
+        .map(node =>
+          this.extractAnswerValueFromNode(
+            node,
+            questionNode,
+            humanReadable
+          )
+        )
+        .filter((a, index, arr) => arr.indexOf(a) === index);
     }
+
     return values;
   }
   
@@ -167,8 +177,8 @@ class QTIParser {
         identifier;
     }
     // <mapping>
-    //  <mapEntry makKEy="alternate value"/>
-    //  <mapEntry makKEy="alternate value2"/>
+    //  <mapEntry mapKey="alternate value"/>
+    //  <mapEntry mapKey="alternate value2"/>
     // </mapping>
     else if(node.attributes.hasOwnProperty('mapKey')) {
       value = node.attributes.mapKey;

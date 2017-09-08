@@ -18,4 +18,5 @@ module.exports = {
   plugins: [
     new webpack.NamedModulesPlugin(),
   ],
+  devtool: 'inline-source-map',
 };
