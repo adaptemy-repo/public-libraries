@@ -1,6 +1,6 @@
 {
   "name": "adaptemy-libs",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Public libraries",
   "main": "index.js",
   "scripts": {
