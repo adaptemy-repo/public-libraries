@@ -3,21 +3,21 @@ import algebra from 'algebra.js';
 export function latexToAlgebraExpression(latex) {
   const pi = Math.PI.toString();
   const escaped = latex
+    .replace(/\\sqrt\[3\]\{(.*?)\}/g, (match, value) => {
+      const result = Math.cbrt(parseFloat(value));
+      return isNaN(result) ? `(cbrt${value})` : `(${result})`;
+    })
+    .replace(/\\sqrt\{([^\)]*?)\}/g, (match, value) => {
+      const result = Math.sqrt(parseFloat(value));
+      return isNaN(result) ? `(sqrt${value})` : `(${result})`;
+    })
     .replace(/\\left\(/g, '(')
     .replace(/\\right\)/g, ')')
     .replace(/\\cdot/g, '*')
     .replace(/\\times/g, '*')
+    .replace(/\\pi/g, `(${pi})`)
     .replace(/\^\{(.?)\}/g, '^($1)')
     .replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '(($1)/($2))')
-    .replace(/\\pi/g, `(${pi})`)
-    .replace(/\\sqrt\[3\]\{(.*?)\}/g, (match, value) => {
-      const result = Math.cbrt(value);
-      return isNaN(result) ? `(cbrt${value})` : `(${result})`;
-    })
-    .replace(/\\sqrt\{(.*?)\}/g, (match, value) => {
-      const result = Math.sqrt(value);
-      return isNaN(result) ? `(sqrt${value})` : `(${result})`;
-    });
 
   const recompiled = recompileRootExpressions(escaped);
   return recompiled;
