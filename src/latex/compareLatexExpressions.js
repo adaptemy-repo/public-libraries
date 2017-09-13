@@ -21,26 +21,32 @@ function populateVariables(exp) {
   return variables;
 }
 
-export function compareLatexExpressions(exp, exp2, algebraic, caseSensitive) {
-  exp = cleanupLatexExpression(exp, caseSensitive);
-  exp2 = cleanupLatexExpression(exp2, caseSensitive);
+export function compareLatexExpressions(solution, answer, algebraic, caseSensitive) {
+  solution = cleanupLatexExpression(solution, caseSensitive);
+  answer = cleanupLatexExpression(answer, caseSensitive);
 
-  if(!exp || !exp2) {
+  if(!solution || !answer) {
     return false;
   }
 
   // @TODO add support for fractions, square of root, braced expressions, etc.
 
-  if(!algebraic) {
-    return exp === exp2;
-  }
-
   try {
-    const parsed1 = latexToAlgebraExpression(exp);
-    const parsed2 = latexToAlgebraExpression(exp2);
-    const variables = populateVariables(parsed1);
+    const parsedSolution = latexToAlgebraExpression(solution);
+    const variables = populateVariables(parsedSolution);
+    const solutionValue = parsedSolution.eval(variables).toString();
 
-    return parsed1.eval(variables).toString() === parsed2.eval(variables).toString();
+    if(!algebraic) {
+      const simple = solution === answer;
+      const math = parseFloat(solutionValue) === parseFloat(answer); 
+
+      return simple || math;
+    }
+
+    const parsedAnswer = latexToAlgebraExpression(answer);
+    const answerValue = parsedAnswer.eval(variables).toString();
+    
+    return solutionValue === answerValue;
   } catch(e) {
     console.log(e);
     return false;
