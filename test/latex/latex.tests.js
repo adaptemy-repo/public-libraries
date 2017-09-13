@@ -1,4 +1,4 @@
-describe.only('Latex tests', () => {
+describe('Latex tests', () => {
   it('should be properly defined and namespaced', () => {
     var index = require('../../');
     expect(typeof index.latex.cleanupLatexExpression).to.equal('function');

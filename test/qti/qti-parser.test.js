@@ -27,7 +27,7 @@ describe('QTIParser', () => {
   describe('.convertStringToQuestions(xmlString)', () => {    
     describe('.getAnswer() => .convertStringToQuestions() (DI validation)', () => {
       describe('caseSensitive questions', () => {
-        const allowedComparisonTypes = ['case-sensitive', 'default'];
+        const allowedComparisonTypes = ['latex', 'algebraic', 'case-sensitive', 'default'];
         
         beforeEach('convert case sensitive XML to questions', () => {
           questions = QTIParser.convertStringToQuestions(caseSensitiveXmlMock);
@@ -37,7 +37,9 @@ describe('QTIParser', () => {
           questions.forEach(question => {
             const answers = QTIParser.getAnswer(question);
             Object.keys(answers).forEach(id => {
-              expect(allowedComparisonTypes.indexOf(answers[id].comparison)).not.to.equal(-1);
+              expect(Array.isArray(answers[id].comparison)).to.be.true;
+              expect(answers[id].comparison.length).to.equal(1);
+              expect(allowedComparisonTypes.indexOf(answers[id].comparison[0])).not.to.equal(-1);
               expect(answers[id].isRange).to.be.false;
             });
           });
