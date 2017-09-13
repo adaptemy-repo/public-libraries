@@ -105,6 +105,9 @@ class QTIParser {
         comparison,
         value: rangeValue || this.extractAnswerValue(nodes[i], questionNode, humanReadable),
         isRange: !!rangeValue,
+        isLatex: comparison.indexOf('latex') !== -1,
+        isAlgebraic: comparison.indexOf('algebraic') !== -1,
+        caseSensitive: comparison.indexOf('case-sensitive') !== -1,
         anyOrder: nodes[i].getAttribute('any-order') === 'true',
         containsAlternatives: this.containsAlternatives(nodes[i]),
       };

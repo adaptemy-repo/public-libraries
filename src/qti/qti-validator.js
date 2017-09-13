@@ -106,10 +106,6 @@ class QTIValidator {
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     let solutionValues = solution.value;
 
-    const isLatex = solutions.comparison.indexOf('latex') !== -1;
-    const isAlgebraic = solutions.comparison.indexOf('algebraic') !== -1;
-    const isCaseSensitive = solutions.comparison.indexOf('case-sensitive') !== -1;
-
     if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
       return false;
     }
@@ -137,16 +133,18 @@ class QTIValidator {
 
     return userAnswer.answers.every(answer => {
       return solutionValues.some(value => {
+        const { isLatex, isAlgebraic, caseSensitive } = solution;
+
         if(isLatex) {
-          return compareLatexExpressions(value, answer, isAlgebraic, isCaseSensitive);
+          return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
         }
         
         if(isAlgebraic) {
           return algebraicEquals(value, answer);
         }
 
-        const ansA = this.uniformatValue(value, isCaseSensitive);
-        const ansB = this.uniformatValue(answer, isCaseSensitive);
+        const ansA = this.uniformatValue(value, caseSensitive);
+        const ansB = this.uniformatValue(answer, caseSensitive);
 
         const stringMatch = ansA === ansB;
         const numericMatch = Number(ansA) === Number(ansB);
