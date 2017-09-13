@@ -21,9 +21,9 @@ function populateVariables(exp) {
   return variables;
 }
 
-export function compareLatexExpressions(exp, exp2, algebraic) {
-  exp = cleanupLatexExpression(exp);
-  exp2 = cleanupLatexExpression(exp2);
+export function compareLatexExpressions(exp, exp2, algebraic, caseSensitive) {
+  exp = cleanupLatexExpression(exp, caseSensitive);
+  exp2 = cleanupLatexExpression(exp2, caseSensitive);
 
   if(!exp || !exp2) {
     return false;

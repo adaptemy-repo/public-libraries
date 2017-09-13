@@ -1,10 +1,12 @@
 import { create } from 'urlify';
 const urlify = create({});
 
-export function cleanupLatexExpression(exp) {
-  const escaped = exp
-    .replace(/\\ /g, '')
-    .toLowerCase();
+export function cleanupLatexExpression(exp, caseSensitive) {
+  let escaped = exp.replace(/\\ /g, '');
+
+  if(!caseSensitive) {
+    escaped = escaped.toLowerCase();
+  }
 
   return escapeCharacters(escaped);
 }
