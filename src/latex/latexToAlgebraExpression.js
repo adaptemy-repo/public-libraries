@@ -20,27 +20,39 @@ function replaceLatexTokens(latex) {
     .replace(/\\sqrt\{([^\{]*?)\}/g, (match, value) => {
       return replaceRootExpression(value, 'sqrt');
     })
-    .replace(/\\frac\{([^\{]*?)\}\{([^\{]*?)\}/g, '(($1)/($2))')
+    .replace(/\\frac\{([^\{]*?)\}\{([^\{]*?)\}/g, (match, top, bottom) => {
+      const fraction = `((${calculate(top)})/(${calculate(bottom)}))`;
+      const evaluated = calculate(fraction);
+
+      return Number.isFinite(evaluated) ? `(${evaluated})` : fraction;
+    })
     .replace(/\\left\(/g, '(')
     .replace(/\\right\)/g, ')')
     .replace(/\\cdot/g, '*')
     .replace(/\\times/g, '*')
     .replace(/\\pi/g, `(${pi})`)
-    .replace(/\^\{(.?)\}/g, '^($1)')
+    .replace(/\^\{([^\{]?)\}/g, '^($1)')
   
   return replaced;
 }
 
 function replaceRootExpression(value, rootType) {
-  try {
-    const expression = algebra.parse(value);
-    const evaluated = parseFloat(expression.eval({}).toString());
-    if(Number.isFinite(evaluated)) {
-      return Math[rootType](evaluated);
-    }
-  } catch(e) { }
+  const evaluated = calculate(value);
+  if(Number.isFinite(evaluated)) {
+    return `(${Math[rootType](evaluated)})`;
+  }
 
   return `(${rootType}(${value}))`;
+}
+
+function calculate(expression) {
+  try {
+    const parsed = algebra.parse(expression);
+    const evaluated = parseFloat(parsed.eval({}).toString());
+    return Number.isFinite(evaluated) ? evaluated : expression;
+  } catch(e) {
+    return expression;
+  }
 }
 
 function replaceSquareRoot(match, varname, power) {
