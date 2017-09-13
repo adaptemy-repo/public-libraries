@@ -2,7 +2,7 @@ import QTIParser from './qti-parser';
 import QTIStyler from './qti-styler';
 import * as QTIElements from './qti-elements';
 import algebraicEquals from '../helpers/algebraic-equals';
-import { compareLatexExpressions } from '../latex';
+import latex from '../latex';
 
 const urlify = require('urlify').create();
 const MINIMAL_SECOND_CHANCE_RATING = 4;
@@ -140,7 +140,7 @@ class QTIValidator {
         const ansB = this.uniformatValue(answer, solution.caseSensitive);
 
         if(solution.comparison === 'latex') {
-          return compareLatexExpressions(value, answer);
+          return latex.compareLatexExpressions(value, answer);
         } else if(solution.comparison === 'algebraic') {
           return algebraicEquals(value, answer);
         } else {
