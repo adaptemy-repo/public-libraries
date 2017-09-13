@@ -106,6 +106,10 @@ class QTIValidator {
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     let solutionValues = solution.value;
 
+    const isLatex = solutions.comparison.indexOf('latex') !== -1;
+    const isAlgebraic = solutions.comparison.indexOf('algebraic') !== -1;
+    const isCaseSensitive = solutions.comparison.indexOf('case-sensitive') !== -1;
+
     if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
       return false;
     }
@@ -133,26 +137,24 @@ class QTIValidator {
 
     return userAnswer.answers.every(answer => {
       return solutionValues.some(value => {
-        // @ATTENTION no need to cast to Number!
-        // both values are uniform strings and will be equalized!
-
-        const ansA = this.uniformatValue(value, solution.caseSensitive);
-        const ansB = this.uniformatValue(answer, solution.caseSensitive);
-
-        if(solution.comparison === 'latex') {
-          return compareLatexExpressions(value, answer);
-        } else if(solution.comparison === 'algebraic') {
-          return algebraicEquals(value, answer);
-        } else {
-          const stringMatch = ansA === ansB;
-          const numericMatch = Number(ansA) === Number(ansB);
-
-          return stringMatch || numericMatch;
+        if(isLatex) {
+          return compareLatexExpressions(value, answer, isAlgebraic, isCaseSensitive);
         }
+        
+        if(isAlgebraic) {
+          return algebraicEquals(value, answer);
+        }
+
+        const ansA = this.uniformatValue(value, isCaseSensitive);
+        const ansB = this.uniformatValue(answer, isCaseSensitive);
+
+        const stringMatch = ansA === ansB;
+        const numericMatch = Number(ansA) === Number(ansB);
+
+        return stringMatch || numericMatch;
       });
     });
   }
-
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
     userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
