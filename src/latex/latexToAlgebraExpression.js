@@ -1,26 +1,46 @@
 import algebra from 'algebra.js';
+const pi = Math.PI.toString();
 
 export function latexToAlgebraExpression(latex) {
-  const pi = Math.PI.toString();
-  const escaped = latex
-    .replace(/\\sqrt\[3\]\{(.*?)\}/g, (match, value) => {
-      const result = Math.cbrt(parseFloat(value));
-      return isNaN(result) ? `(cbrt${value})` : `(${result})`;
+  let escaped = replaceLatexTokens(latex);
+
+  while(escaped !== replaceLatexTokens(escaped)) {
+    escaped = replaceLatexTokens(escaped);
+  }
+
+  const recompiled = recompileRootExpressions(escaped);
+  return recompiled;
+}
+
+function replaceLatexTokens(latex) {
+  const replaced = latex
+    .replace(/\\sqrt\[3\]\{([^\{]*?)\}/g, (match, value) => {
+      return replaceRootExpression(value, 'cbrt');
     })
-    .replace(/\\sqrt\{([^\)]*?)\}/g, (match, value) => {
-      const result = Math.sqrt(parseFloat(value));
-      return isNaN(result) ? `(sqrt${value})` : `(${result})`;
+    .replace(/\\sqrt\{([^\{]*?)\}/g, (match, value) => {
+      return replaceRootExpression(value, 'sqrt');
     })
+    .replace(/\\frac\{([^\{]*?)\}\{([^\{]*?)\}/g, '(($1)/($2))')
     .replace(/\\left\(/g, '(')
     .replace(/\\right\)/g, ')')
     .replace(/\\cdot/g, '*')
     .replace(/\\times/g, '*')
     .replace(/\\pi/g, `(${pi})`)
     .replace(/\^\{(.?)\}/g, '^($1)')
-    .replace(/\\frac\{(.*?)\}\{(.*?)\}/g, '(($1)/($2))')
+  
+  return replaced;
+}
 
-  const recompiled = recompileRootExpressions(escaped);
-  return recompiled;
+function replaceRootExpression(value, rootType) {
+  try {
+    const expression = algebra.parse(value);
+    const evaluated = parseFloat(expression.eval({}).toString());
+    if(Number.isFinite(evaluated)) {
+      return Math[rootType](evaluated);
+    }
+  } catch(e) { }
+
+  return `(${rootType}(${value}))`;
 }
 
 function replaceSquareRoot(match, varname, power) {
