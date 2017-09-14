@@ -33,19 +33,14 @@ export function compareLatexExpressions(solution, answer, algebraic, caseSensiti
 
   try {
     const parsedSolution = latexToAlgebraExpression(solution);
+    const parsedAnswer = latexToAlgebraExpression(answer);
     const variables = populateVariables(parsedSolution);
-    const solutionValue = parsedSolution.eval(variables).toString();
 
     if(!algebraic) {
-      const simple = solution === answer;
-      const math = Number(solutionValue) === Number(answer);
-      
-      // @TODO evaluate (2^2)a + b === 4a + b
-
-      return simple || math;
+      return parsedSolution.eval({}).toString() === answer;
     }
 
-    const parsedAnswer = latexToAlgebraExpression(answer);
+    const solutionValue = parsedSolution.eval(variables).toString();
     const answerValue = parsedAnswer.eval(variables).toString();
     
     return solutionValue === answerValue;
