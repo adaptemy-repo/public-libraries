@@ -24,7 +24,7 @@ function replaceLatexTokens(latex) {
       const fraction = `((${calculate(top)})/(${calculate(bottom)}))`;
       const evaluated = calculate(fraction);
 
-      return Number.isFinite(evaluated) ? `(${evaluated})` : fraction;
+      return isFinite(evaluated) ? `(${evaluated})` : fraction;
     })
     .replace(/\\left\(/g, '(')
     .replace(/\\right\)/g, ')')
@@ -38,7 +38,7 @@ function replaceLatexTokens(latex) {
 
 function replaceRootExpression(value, rootType) {
   const evaluated = calculate(value);
-  if(Number.isFinite(evaluated)) {
+  if(isFinite(evaluated)) {
     return `(${Math[rootType](evaluated)})`;
   }
 
@@ -48,8 +48,8 @@ function replaceRootExpression(value, rootType) {
 function calculate(expression) {
   try {
     const parsed = algebra.parse(expression);
-    const evaluated = parseFloat(parsed.eval({}).toString());
-    return Number.isFinite(evaluated) ? evaluated : expression;
+    const evaluated = Number(parsed.eval({}).toString());
+    return isFinite(evaluated) ? evaluated : expression;
   } catch(e) {
     return expression;
   }

@@ -38,7 +38,7 @@ export function compareLatexExpressions(solution, answer, algebraic, caseSensiti
 
     if(!algebraic) {
       const simple = solution === answer;
-      const math = parseFloat(solutionValue) === parseFloat(answer); 
+      const math = Number(solutionValue) === Number(answer); 
 
       return simple || math;
     }
