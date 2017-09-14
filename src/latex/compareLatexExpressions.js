@@ -38,7 +38,9 @@ export function compareLatexExpressions(solution, answer, algebraic, caseSensiti
 
     if(!algebraic) {
       const simple = solution === answer;
-      const math = Number(solutionValue) === Number(answer); 
+      const math = Number(solutionValue) === Number(answer);
+      
+      // @TODO evaluate (2^2)a + b === 4a + b
 
       return simple || math;
     }
