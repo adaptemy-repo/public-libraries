@@ -134,7 +134,10 @@ class QTIValidator {
       return solutionValues.some(value => {
         // @ATTENTION no need to cast to Number!
         // both values are uniform strings and will be equalized!
-
+        if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
+          //answers containing incorrect decimal separator are incorrect
+          return false;
+        }
         const ansA = this.uniformatValue(value, solution.caseSensitive);
         const ansB = this.uniformatValue(answer, solution.caseSensitive);
         if(solution.comparison === 'algebraic') {
