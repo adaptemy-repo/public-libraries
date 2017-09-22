@@ -9,9 +9,6 @@ const MINIMAL_SECOND_CHANCE_RATING = 4;
 class QTIValidator {
   constructor() {
     this.decimalSeparator = '.'; // default decimal separator
-    
-    // @TODO remove and set per publisher
-    this.decimalSeparator = ',';
   }
   
   setDecimalSeparator(separator) {
