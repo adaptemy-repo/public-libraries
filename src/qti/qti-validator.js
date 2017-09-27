@@ -24,7 +24,7 @@ class QTIValidator {
     switch(questionType) {
       case QTIElements.extendedTextInteraction.IDENTIFIER:
       case QTIElements.textEntryInteraction.IDENTIFIER:
-        if (inputNode.getAttribute('comparison') === 'latex'){
+        if (inputNode.getAttribute('comparison').indexOf('latex') !== -1){
           return inputNode.getAttribute('value');
         }
         return inputNode.value;

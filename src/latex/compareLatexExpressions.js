@@ -37,7 +37,7 @@ export function compareLatexExpressions(solution, answer, algebraic, caseSensiti
     const variables = populateVariables(parsedSolution);
 
     if(!algebraic) {
-      return parsedSolution.eval({}).toString() === answer;
+      return solution === answer;
     }
 
     const solutionValue = parsedSolution.eval(variables).toString();
