@@ -3,6 +3,7 @@ import QTIStyler from './qti-styler';
 import * as QTIElements from './qti-elements';
 import algebraicEquals from '../helpers/algebraic-equals';
 import latex from '../latex';
+import { compareLatexExpressions } from '../latex/compareLatexExpressions';
 
 const urlify = require('urlify').create();
 const MINIMAL_SECOND_CHANCE_RATING = 4;
@@ -151,7 +152,7 @@ class QTIValidator {
         const { isLatex, isAlgebraic, caseSensitive } = solution;
 
         if(isLatex) {
-          return latex.compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
+          return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
         }
         
         if(isAlgebraic) {
