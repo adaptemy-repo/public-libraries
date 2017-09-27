@@ -98,6 +98,21 @@ class QTIValidator {
   filterAnyOrderSolutions(solutions) {
     return solutions.filter(solution => solution.anyOrder);
   }
+
+  containsIncorrectDecimalSeparator(value){
+    var possibleSeparators = ['.', ','];
+    var correctSeparator = this.decimalSeparator;
+    var valueString = ''+value;
+    return possibleSeparators.some(function(separator){
+      if (separator === correctSeparator){
+        return false;
+      }
+      if (valueString.includes(separator)){
+        return true;
+      }
+      return false;
+    });
+  }
   
   isValidUserAnswer(solutions, userAnswer) {
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
@@ -115,6 +130,9 @@ class QTIValidator {
       const [min, max] = solution.value.sort((a, b) => a - b);
 
       return userAnswer.answers.every(value => {
+        if (this.containsIncorrectDecimalSeparator(value)){
+          return false;
+        }
         value = parseFloat(value);
         if(isNaN(value)) {
           return false;
