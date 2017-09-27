@@ -10,9 +10,6 @@ const MINIMAL_SECOND_CHANCE_RATING = 4;
 class QTIValidator {
   constructor() {
     this.decimalSeparator = '.'; // default decimal separator
-    
-    // @TODO remove and set per publisher
-    this.decimalSeparator = ',';
   }
   
   setDecimalSeparator(separator) {
@@ -141,6 +138,11 @@ class QTIValidator {
         
         if(isAlgebraic) {
           return algebraicEquals(value, answer);
+        }
+
+        if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
+          //answers containing incorrect decimal separator are incorrect
+          return false;
         }
 
         const ansA = this.uniformatValue(value, caseSensitive);
