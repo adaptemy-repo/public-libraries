@@ -114,8 +114,25 @@ class QTIValidator {
       return false;
     });
   }
+
+  isAnswerInRange(userAnswer, range){
+    var min, max;
+    [min, max] = range.sort((a, b) => a - b);
+    return userAnswer.answers.every(value => {
+      if (this.containsIncorrectDecimalSeparator(value)){
+        return false;
+      }
+      value = parseFloat(value);
+      if(isNaN(value)) {
+        return false;
+      }
+
+      return value >= min && value <= max; 
+    });
+  }
   
   isValidUserAnswer(solutions, userAnswer) {
+    var self = this;
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
     let solutionValues = solution.value;
 
@@ -128,19 +145,16 @@ class QTIValidator {
     }
     
     if(solution.isRange) {
-      const [min, max] = solution.value.sort((a, b) => a - b);
-
-      return userAnswer.answers.every(value => {
-        if (this.containsIncorrectDecimalSeparator(value)){
-          return false;
-        }
-        value = parseFloat(value);
-        if(isNaN(value)) {
-          return false;
-        }
-
-        return value >= min && value <= max; 
-      });
+      if (!solution.anyOrder){
+        return self.isAnswerInRange(userAnswer, solution.value);
+      }
+      else{
+        return solutionValues.some(function(solutionValue){
+          return self.isAnswerInRange(userAnswer, solutionValue);
+          
+        });
+      }
+      
     }
 
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
