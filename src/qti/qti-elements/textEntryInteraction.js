@@ -3,7 +3,7 @@ export default class textEntryInteraction {
 
   constructor(node, answers, seed) {
     this.node = node;
-    this.className = 'qti-interaction qti-input';
+    this.className = 'rf-fancy-input-boxes qti-interaction qti-input ' + node.tagName;
 
     this.maxLength = node.getAttribute('expectedLength');
     this.name = node.getAttribute('responseIdentifier');
