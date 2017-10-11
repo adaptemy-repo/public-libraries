@@ -93,7 +93,12 @@ class QTIValidator {
   
   findAnyOrderSolutionValues(solutions) {
     const anyOrder = this.filterAnyOrderSolutions(solutions);
-    return anyOrder.map(solution => solution.value);
+    return anyOrder.map(function(solution){
+      return {
+        value: solution.value,
+        caseSensitive: solution.caseSensitive
+      };
+    });
   }
   
   filterAnyOrderSolutions(solutions) {
@@ -150,43 +155,57 @@ class QTIValidator {
       }
       else{
         return solutionValues.some(function(solutionValue){
-          return self.isAnswerInRange(userAnswer, solutionValue);
+          return self.isAnswerInRange(userAnswer, solutionValue.value);
           
         });
       }
-      
-    }
+    } 
 
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
+    if (!solution.anyOrder){
+      return userAnswer.answers.every(answer => {
+        return solutionValues.some(solutionValue => {
+          return self.isSingleValueCorrect(solution, solutionValue.value, answer, solutionValue.caseSensitive);
+        });
+      });  
+    }
+    else{
+      return userAnswer.answers.every(answer => {
+        return solutionValues.some(function(solutionValue){
+          return solutionValue.value.some(function(value){
+            return self.isSingleValueCorrect(solution, value, answer, solutionValue.caseSensitive); 
+          });
+        });
+      }); 
+    }
+    
+  }
 
-    return userAnswer.answers.every(answer => {
-      return solutionValues.some(value => {
-        const { isLatex, isAlgebraic, caseSensitive } = solution;
+  isSingleValueCorrect(solution, value, answer, caseSensitive){
+    const { isLatex, isAlgebraic } = solution;
 
-        if(isLatex) {
-          return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
-        }
-        
-        if(isAlgebraic) {
-          return algebraicEquals(value, answer);
-        }
+    if(isLatex) {
+      return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
+    }
+    
+    if(isAlgebraic) {
+      return algebraicEquals(value, answer);
+    }
 
-        if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
-          //answers containing incorrect decimal separator are incorrect
-          return false;
-        }
+    if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
+      //answers containing incorrect decimal separator are incorrect
+      return false;
+    }
 
-        const ansA = this.uniformatValue(value, caseSensitive);
-        const ansB = this.uniformatValue(answer, caseSensitive);
+    const ansA = this.uniformatValue(value, caseSensitive);
+    const ansB = this.uniformatValue(answer, caseSensitive);
 
-        const stringMatch = ansA === ansB;
-        const numericMatch = Number(ansA) === Number(ansB);
+    const stringMatch = ansA === ansB;
+    const numericMatch = Number(ansA) === Number(ansB);
 
-        return stringMatch || numericMatch;
-      });
-    });
+    return stringMatch || numericMatch;
   }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
