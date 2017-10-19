@@ -139,7 +139,11 @@ class QTIValidator {
   isValidUserAnswer(solutions, userAnswer) {
     var self = this;
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
-    let solutionValues = solution.value;
+    let solutionValues = 
+    [{
+      value: solution.value,
+      caseSensitive: solution.caseSensitive
+    }];
 
     if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
       return false;
@@ -167,7 +171,7 @@ class QTIValidator {
     if (!solution.anyOrder){
       return userAnswer.answers.every(answer => {
         return solutionValues.some(solutionValue => {
-          return self.isSingleValueCorrect(solution, solutionValue.value, answer, solutionValue.caseSensitive);
+          return self.isSingleValueCorrect(solution, solutionValue.value[0], answer, solutionValue.caseSensitive);
         });
       });  
     }
@@ -181,7 +185,7 @@ class QTIValidator {
       }); 
     }
     
-  }
+  }//isValidUserAnswer
 
   isSingleValueCorrect(solution, value, answer, caseSensitive){
     const { isLatex, isAlgebraic } = solution;
