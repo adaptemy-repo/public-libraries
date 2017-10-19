@@ -144,13 +144,12 @@ class QTIValidator {
       value: solution.value,
       caseSensitive: solution.caseSensitive
     }];
+    if(solution.anyOrder) {
+      solutionValues = this.findAnyOrderSolutionValues(solutions);
+    }
 
     if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
       return false;
-    }
-
-    if(solution.anyOrder) {
-      solutionValues = this.findAnyOrderSolutionValues(solutions);
     }
     
     if(solution.isRange) {
@@ -168,22 +167,14 @@ class QTIValidator {
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
-    if (!solution.anyOrder){
-      return userAnswer.answers.every(answer => {
-        return solutionValues.some(solutionValue => {
-          return self.isSingleValueCorrect(solution, solutionValue.value[0], answer, solutionValue.caseSensitive);
+    
+    return userAnswer.answers.every(answer => {
+      return solutionValues.some(function(solutionValue){
+        return solutionValue.value.some(function(value){
+          return self.isSingleValueCorrect(solution, value, answer, solutionValue.caseSensitive); 
         });
-      });  
-    }
-    else{
-      return userAnswer.answers.every(answer => {
-        return solutionValues.some(function(solutionValue){
-          return solutionValue.value.some(function(value){
-            return self.isSingleValueCorrect(solution, value, answer, solutionValue.caseSensitive); 
-          });
-        });
-      }); 
-    }
+      });
+    }); 
     
   }//isValidUserAnswer
 
