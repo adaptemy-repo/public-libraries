@@ -33,7 +33,7 @@ export default class textEntryInteraction {
   }
 
   generateDOMNode() {
-    var nodetype = this.comparison === 'latex' ? 'div' : 'input';
+    var nodetype = this.comparison.includes('latex') ? 'div' : 'input';
     const input = document.createElement(nodetype);
     input.className = this.className;
 

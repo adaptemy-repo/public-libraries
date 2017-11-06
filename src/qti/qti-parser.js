@@ -91,18 +91,23 @@ class QTIParser {
   }
   
   getAnswer(questionNode, humanReadable = false) {
+    let key, comparison, rangeValue;
     const nodes = questionNode.getElementsByTagName(ANSWER_IDENTIFIER);
-    let answer = {};
+    const answer = {};
+
     for(let i = 0; i < nodes.length; i++) {
-      let key = nodes[i].getAttribute('identifier');
-      let comparison = nodes[i].getAttribute('comparison') || 'default';
-      let rangeValue = this.extractRangeValue(nodes[i]);
+      key = nodes[i].getAttribute('identifier');
+      rangeValue = this.extractRangeValue(nodes[i]);
+      comparison = nodes[i].getAttribute('comparison') || 'default';
+      comparison = comparison.split(' ');
 
       answer[key] = {
         comparison,
         value: rangeValue || this.extractAnswerValue(nodes[i], questionNode, humanReadable),
         isRange: !!rangeValue,
-        caseSensitive: nodes[i].getAttribute('comparison') === 'case-sensitive',
+        isLatex: comparison.indexOf('latex') !== -1,
+        isAlgebraic: comparison.indexOf('algebraic') !== -1,
+        caseSensitive: comparison.indexOf('case-sensitive') !== -1,
         anyOrder: nodes[i].getAttribute('any-order') === 'true',
         containsAlternatives: this.containsAlternatives(nodes[i]),
       };

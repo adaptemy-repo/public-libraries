@@ -1,1 +1,8 @@
 node_modules
+package-lock.json
+*.swp
+*.log
+*.map
+.sass-cache
+.DS_Store
+npm-debug.log
