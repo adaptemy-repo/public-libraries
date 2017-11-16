@@ -7,3 +7,5 @@ export { default as QTIStyler } from './src/qti/qti-styler';
 export { default as QTIParser } from './src/qti/qti-parser';
 export { default as QTIValidator } from './src/qti/qti-validator';
 export { default as QTIPopulator } from './src/qti/qti-populator';
+
+export { default as latex } from './src/latex';

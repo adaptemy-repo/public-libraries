@@ -1,6 +1,6 @@
 {
   "name": "adaptemy-libs",
-  "version": "1.2.2",
+  "version": "1.2.5",
   "description": "Public libraries",
   "main": "index.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "webpack": "^2.4.1"
   },
   "dependencies": {
+    "algebra.js": "^0.2.6",
     "urlify": "^0.3.6"
   }
 }

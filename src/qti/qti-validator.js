@@ -2,6 +2,8 @@ import QTIParser from './qti-parser';
 import QTIStyler from './qti-styler';
 import * as QTIElements from './qti-elements';
 import algebraicEquals from '../helpers/algebraic-equals';
+import latex from '../latex';
+import { compareLatexExpressions } from '../latex/compareLatexExpressions';
 
 const urlify = require('urlify').create();
 const MINIMAL_SECOND_CHANCE_RATING = 4;
@@ -9,9 +11,6 @@ const MINIMAL_SECOND_CHANCE_RATING = 4;
 class QTIValidator {
   constructor() {
     this.decimalSeparator = '.'; // default decimal separator
-    
-    // @TODO remove and set per publisher
-    this.decimalSeparator = ',';
   }
   
   setDecimalSeparator(separator) {
@@ -25,7 +24,7 @@ class QTIValidator {
     switch(questionType) {
       case QTIElements.extendedTextInteraction.IDENTIFIER:
       case QTIElements.textEntryInteraction.IDENTIFIER:
-        if (inputNode.getAttribute('comparison') === 'latex'){
+        if (inputNode.getAttribute('comparison').indexOf('latex') !== -1){
           return inputNode.getAttribute('value');
         }
         return inputNode.value;
@@ -94,61 +93,115 @@ class QTIValidator {
   
   findAnyOrderSolutionValues(solutions) {
     const anyOrder = this.filterAnyOrderSolutions(solutions);
-    return anyOrder.map(solution => solution.value);
+    return anyOrder.map(function(solution){
+      return {
+        value: solution.value,
+        caseSensitive: solution.caseSensitive
+      };
+    });
   }
   
   filterAnyOrderSolutions(solutions) {
     return solutions.filter(solution => solution.anyOrder);
   }
+
+  containsIncorrectDecimalSeparator(value){
+    var possibleSeparators = ['.', ','];
+    var correctSeparator = this.decimalSeparator;
+    var valueString = ''+value;
+    return possibleSeparators.some(function(separator){
+      if (separator === correctSeparator){
+        return false;
+      }
+      if (valueString.includes(separator)){
+        return true;
+      }
+      return false;
+    });
+  }
+
+  isAnswerInRange(userAnswer, range){
+    var min, max;
+    [min, max] = range.sort((a, b) => a - b);
+    return userAnswer.answers.every(value => {
+      if (this.containsIncorrectDecimalSeparator(value)){
+        return false;
+      }
+      value = parseFloat(value);
+      if(isNaN(value)) {
+        return false;
+      }
+
+      return value >= min && value <= max; 
+    });
+  }
   
   isValidUserAnswer(solutions, userAnswer) {
+    var self = this;
     let solution = this.findSolutionByIdentifier(solutions, userAnswer.identifier);
-    let solutionValues = solution.value;
+    let solutionValues = 
+    [{
+      value: solution.value,
+      caseSensitive: solution.caseSensitive
+    }];
+    if(solution.anyOrder) {
+      solutionValues = this.findAnyOrderSolutionValues(solutions);
+    }
 
     if(!userAnswer || !userAnswer.answers || !userAnswer.answers.length) {
       return false;
     }
-
-    if(solution.anyOrder) {
-      solutionValues = this.findAnyOrderSolutionValues(solutions);
-    }
     
     if(solution.isRange) {
-      const [min, max] = solution.value.sort((a, b) => a - b);
-
-      return userAnswer.answers.every(value => {
-        value = parseFloat(value);
-        if(isNaN(value)) {
-          return false;
-        }
-
-        return value >= min && value <= max; 
-      });
-    }
+      if (!solution.anyOrder){
+        return self.isAnswerInRange(userAnswer, solution.value);
+      }
+      else{
+        return solutionValues.some(function(solutionValue){
+          return self.isAnswerInRange(userAnswer, solutionValue.value);
+          
+        });
+      }
+    } 
 
     if( !solution.containsAlternatives && (solution.value.length !== userAnswer.answers.length) ) {
       return false;
     }
-
+    
     return userAnswer.answers.every(answer => {
-      return solutionValues.some(value => {
-        // @ATTENTION no need to cast to Number!
-        // both values are uniform strings and will be equalized!
-
-        const ansA = this.uniformatValue(value, solution.caseSensitive);
-        const ansB = this.uniformatValue(answer, solution.caseSensitive);
-        if(solution.comparison === 'algebraic') {
-          return algebraicEquals(value, answer);
-        } else {
-          const stringMatch = ansA === ansB;
-          const numericMatch = Number(ansA) === Number(ansB);
-
-          return stringMatch || numericMatch;
-        }
+      return solutionValues.some(function(solutionValue){
+        return solutionValue.value.some(function(value){
+          return self.isSingleValueCorrect(solution, value, answer, solutionValue.caseSensitive); 
+        });
       });
-    });
-  }
+    }); 
+    
+  }//isValidUserAnswer
 
+  isSingleValueCorrect(solution, value, answer, caseSensitive){
+    const { isLatex, isAlgebraic } = solution;
+
+    if(isLatex) {
+      return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
+    }
+    
+    if(isAlgebraic) {
+      return algebraicEquals(value, answer);
+    }
+
+    if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
+      //answers containing incorrect decimal separator are incorrect
+      return false;
+    }
+
+    const ansA = this.uniformatValue(value, caseSensitive);
+    const ansB = this.uniformatValue(answer, caseSensitive);
+
+    const stringMatch = ansA === ansB;
+    const numericMatch = Number(ansA) === Number(ansB);
+
+    return stringMatch || numericMatch;
+  }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
     userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
