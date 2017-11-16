@@ -39,6 +39,35 @@ class QTIValidator {
     
     throw 'The provided inputNode did not contain a question-type';
   }
+
+  extractAllCheckboxes(inputNode) {
+    const questionType = inputNode.getAttribute('question-type');
+    
+    switch(questionType) {
+      case QTIElements.extendedTextInteraction.IDENTIFIER:
+      case QTIElements.textEntryInteraction.IDENTIFIER:
+        return [];
+        
+      case QTIElements.inlineChoiceInteraction.IDENTIFIER:
+        return [];
+        
+      case QTIElements.choiceInteraction.IDENTIFIER:
+        return this.getAllAvailableValues(inputNode);
+    }
+    
+    throw 'The provided inputNode did not contain a question-type';
+  }
+
+  getAllAvailableValues(node) {
+    const inputs = node.getElementsByTagName('input');
+    const values = [];
+    
+    for(let i = 0; i < inputs.length; i++) {
+      values.push(inputs[i].id);
+    }
+    
+    return values;
+  }
   
   getCheckedValues(node) {
     const inputs = node.getElementsByTagName('input');
@@ -73,6 +102,7 @@ class QTIValidator {
     
     return inputs.map(node => {
       let answers = this.extractUserAnswer(node) || [];
+      let availableAnswers = this.extractAllCheckboxes(node) || [];
       
       // cast to array
       if(!Array.isArray(answers)) {
@@ -82,6 +112,7 @@ class QTIValidator {
       return {
         node,
         answers,
+        availableAnswers,
         identifier: node.getAttribute('identifier')
       };
     });
@@ -204,9 +235,39 @@ class QTIValidator {
   }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
+    //removeUnavailableCheckboxes is to allow for a bug in the authoring system.
+    //It can show us some checkbox answers are required even when they are not present in the html
+    //we remove any required answers which were not presented to the user.
+    //These functions are also included in this bug fix: extractAllCheckboxes, getAllAvailableValues
+    solutions = this.removeUnavailableCheckboxes(userAnswers, solutions);
     userAnswers = this.santizeDuplicateAnyOrderAnswers(userAnswers, solutions);
     return userAnswers.every(this.isValidUserAnswer.bind(this, solutions));
   }
+
+  removeUnavailableCheckboxes(userAnswers, solutions){
+    //if available options are not being tracked, do nothing
+    var isAnyAnswerUntracked = userAnswers.some(function(userAnswer){
+      return !(userAnswer.availableAnswers && userAnswer.availableAnswers.length > 0);
+    });
+    if (isAnyAnswerUntracked){
+      return solutions;
+    }
+
+    //get UUID of all options presented to the user
+    var allAvailableAnswers = userAnswers.reduce(function(pre, cur){
+      return pre.concat(cur.availableAnswers);
+    },[]);
+    //remove any required answers which were not presented to the user.
+    solutions.forEach(function(solution){
+      solution.value = solution.value.filter(function(valueUnderTest){
+        return allAvailableAnswers.some(function(availableAnswer){
+          return availableAnswer === valueUnderTest;
+        });
+      });
+    });
+    return solutions;
+  }
+
 
   styleInputs(userAnswers, solutions, hasUsedLastChance) {
     QTIStyler.setInputValidationState(userAnswers, solutions, hasUsedLastChance);
