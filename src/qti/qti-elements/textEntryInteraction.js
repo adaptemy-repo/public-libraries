@@ -29,7 +29,7 @@ export default class textEntryInteraction {
   }
 
   get answerLength() {
-    return String(this.answer).length;
+    return String(this.answer[0]).length;
   }
 
   generateDOMNode() {
