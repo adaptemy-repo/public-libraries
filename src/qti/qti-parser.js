@@ -175,8 +175,8 @@ class QTIParser {
   extractAnswerValueFromNode(node, questionNode, humanReadable) {
     let value;
     
-    if(node.attributes.hasOwnProperty('choiceIdentifier')) {
-      const identifier = node.getAttribute('choiceIdentifier');
+    if(node.attributes.hasOwnProperty('choiceIdentifier') || node.attributes.hasOwnProperty('choiceidentifier') ) {
+      const identifier = node.getAttribute('choiceIdentifier') || node.getAttribute('choiceidentifier');
       value = humanReadable ?
         this.extractHumanReadableChoice(questionNode, identifier) :
         identifier;
