@@ -364,6 +364,9 @@ class QTIValidator {
     value = value.replace(/ /g, '');    // remove spaces
     value = caseSensitive ? value : value.toLowerCase();
     
+    //flatten different types of comma
+    value = value.replace(/\‚/g, ',');
+    
     // replace decimal separator
     if(this.decimalSeparator !== '.') {
       const decimalRegex = new RegExp(`${this.decimalSeparator}`, 'g');
