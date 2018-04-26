@@ -5,7 +5,7 @@ export default class extendedTextInteraction extends textEntryInteraction {
 
   constructor(node, answers, seed) {
     super(node, answers, seed);
-    this.className = 'qti-interaction qti-input extended';
+    this.className = 'rf-fancy-input-boxes qti-interaction qti-input extended';
     this.questionType = extendedTextInteraction.IDENTIFIER;
   }
 }
