@@ -103,7 +103,8 @@ class QTIParser {
 
       answer[key] = {
         comparison,
-        value: rangeValue || this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        value: this.extractAnswerValue(nodes[i], questionNode, humanReadable),
+        rangeValue: rangeValue,
         isRange: !!rangeValue,
         isLatex: comparison.indexOf('latex') !== -1,
         isAlgebraic: comparison.indexOf('algebraic') !== -1,
@@ -146,10 +147,11 @@ class QTIParser {
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
-    let values = ['meerkat'];
+    let values = [''];
     
     // multiple answers
-    if(valueTags.length > 0) {
+    //if(valueTags.length > 0) {
+    if(true) {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
       let nodes = Array.prototype.slice.call(valueTags);
       nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
