@@ -185,12 +185,15 @@ class QTIValidator {
     
     if(solution.isRange) {
       if (!solution.anyOrder){
-        return self.isAnswerInRange(userAnswer, solution.value);
+        if (self.isAnswerInRange(userAnswer, solution.rangeValue)){
+          return true;
+        }
       }
       else{
         return solutionValues.some(function(solutionValue){
-          return self.isAnswerInRange(userAnswer, solutionValue.value);
-          
+          if (self.isAnswerInRange(userAnswer, solutionValue.rangeValue)){
+            return true;
+          }
         });
       }
     } 
@@ -211,7 +214,6 @@ class QTIValidator {
 
   isSingleValueCorrect(solution, value, answer, caseSensitive){
     const { isLatex, isAlgebraic } = solution;
-
     if(isLatex) {
       return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
     }
