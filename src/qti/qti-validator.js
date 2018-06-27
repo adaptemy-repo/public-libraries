@@ -191,7 +191,7 @@ class QTIValidator {
       }
       else{
         return solutionValues.some(function(solutionValue){
-          if (self.isAnswerInRange(userAnswer, solutionValue.ranveValue)){
+          if (self.isAnswerInRange(userAnswer, solutionValue.rangeValue)){
             return true;
           }
         });
