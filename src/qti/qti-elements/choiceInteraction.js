@@ -121,10 +121,13 @@ export default class choiceInteraction {
   }
 
   isContainingImages(node) {
-    const container = document.createElement('div');
-    container.appendChild(node.cloneNode());
-    
-    return container.innerHTML.indexOf('<img') !== -1;
+    try{
+      var result = node.innerHTML.indexOf('<img') !== -1;
+      return result;
+    }
+    catch(e){
+      return false;
+    }
   }
 
   generateDOMNode() {
