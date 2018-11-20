@@ -147,13 +147,15 @@ class QTIParser {
   
   extractAnswerValue(answerNode, questionNode, humanReadable = false) {
     const valueTags = answerNode.getElementsByTagName('value');
+    let nodes = Array.prototype.slice.call(valueTags);
+    nodes = nodes.filter(this.isInQuestionNode.bind(this,questionNode));
     let values = [''];
     
     // multiple answers
     //if(valueTags.length > 0) {
     if(true) {
       const mapEntries = answerNode.getElementsByTagName('mapEntry');
-      let nodes = Array.prototype.slice.call(valueTags);
+      
       nodes = nodes.concat(Array.prototype.slice.call(mapEntries));
       values = nodes
         .map(node =>
@@ -167,6 +169,17 @@ class QTIParser {
     }
 
     return values;
+  }
+
+  isInQuestionNode(qnNode, valueNode){
+    try{
+      const identifier = valueNode.parentNode.parentNode.getAttribute('identifier');
+      const qnText = qnNode.querySelector('itemBody, itemInteractionBody').innerHTML;
+      return qnText.indexOf(identifier) !== -1;
+    }
+    catch(e){
+      return true;
+    }
   }
   
   extractHumanReadableChoice(questionNode, identifier) {
