@@ -61,7 +61,7 @@ export default class choiceInteraction {
     const accessibilitySpan = document.createElement('span');
     const identifier = node.getAttribute('identifier');
     
-    choice.innerHTML = node.innerHTML;
+    choice.innerHTML = node.innerHTML || new XMLSerializer().serializeToString(node.firstChild);
     container.className = 'margin-bottom';
 
     // input attributes
@@ -95,7 +95,7 @@ export default class choiceInteraction {
     const accessibilitySpan = document.createElement('span');
     const identifier = node.getAttribute('identifier');
     
-    choice.innerHTML = node.innerHTML;
+    choice.innerHTML = node.innerHTML || new XMLSerializer().serializeToString(node.firstChild);
     container.className = 'margin-bottom';
     containerSpan.className = 'image-container';
     labelBG.className = 'image-bg';
