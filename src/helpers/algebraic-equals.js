@@ -1,17 +1,22 @@
 'use strict';
 
 export default function algebraicEquals(a,b){
-  a = a.replace(/–/g, '-'); //be forgiving of different dashes for minus
-  b = b.replace(/–/g, '-'); //be forgiving of different dashes for minus
-  var dimension = getDimension(a);
-  var errorFound = false;
-  dimension = dimension || 1; //set minimum value to 1, we want to test problems of 0 dimension
-  for (var count = 0; count < dimension; count++){
-    if (!compareOnce(a,b)){
-      errorFound = true;
+  try{
+    a = a.replace(/–/g, '-'); //be forgiving of different dashes for minus
+    b = b.replace(/–/g, '-'); //be forgiving of different dashes for minus
+    var dimension = getDimension(a);
+    var errorFound = false;
+    dimension = dimension || 1; //set minimum value to 1, we want to test problems of 0 dimension
+    for (var count = 0; count < dimension; count++){
+      if (!compareOnce(a,b)){
+        errorFound = true;
+      }
     }
+    return !errorFound 
   }
-  return !errorFound  
+  catch(e){
+    return false;
+  } 
 }
 
 function compareOnce(s1,s2){
