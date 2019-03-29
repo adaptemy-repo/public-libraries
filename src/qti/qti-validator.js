@@ -278,7 +278,7 @@ class QTIValidator {
   santizeDuplicateAnyOrderAnswers(userAnswers, solutions) {
     const sanitized = [];
     const anyAnswer = [];
-
+    var self = this;
     solutions.forEach(solution => {
       const answer = userAnswers.find(
         answer => answer.identifier === solution.identifier
@@ -296,9 +296,16 @@ class QTIValidator {
       // an anyOrder answer
       else
       {
+        var matchingSolutions = solutions.filter( function (solution) {
+          return self.isSingleValueCorrect(solution, solution.value, answer.answers[0])
+        });
+
         // answer was previously entered (look only at first value)
         if(anyAnswer.indexOf(answer.answers[0]) === -1) {
           anyAnswer.push(answer.answers[0]);
+        } else if (matchingSolutions.length > 1) {
+          // Are there several matching 'any order' solutions
+          // If so, leave the remaining answers alone
         }
         else {
           answer.answers = [ null ];
