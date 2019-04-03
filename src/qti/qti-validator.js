@@ -213,27 +213,31 @@ class QTIValidator {
   }//isValidUserAnswer
 
   isSingleValueCorrect(solution, value, answer, caseSensitive){
-    const { isLatex, isAlgebraic } = solution;
-    if(isLatex) {
-      return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
+    try{
+      const { isLatex, isAlgebraic } = solution;
+      if(isLatex) {
+        return compareLatexExpressions(value, answer, isAlgebraic, caseSensitive);
+      }
+      
+      if(isAlgebraic) {
+        return algebraicEquals(value, answer);
+      }
+
+      if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
+        //answers containing incorrect decimal separator are incorrect
+        return false;
+      }
+
+      const ansA = this.uniformatValue(value, caseSensitive);
+      const ansB = this.uniformatValue(answer, caseSensitive);
+
+      const stringMatch = ansA === ansB;
+      const numericMatch = Number(ansA) === Number(ansB);
+
+      return stringMatch || numericMatch;
+    } catch (e) {
+      return false
     }
-    
-    if(isAlgebraic) {
-      return algebraicEquals(value, answer);
-    }
-
-    if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
-      //answers containing incorrect decimal separator are incorrect
-      return false;
-    }
-
-    const ansA = this.uniformatValue(value, caseSensitive);
-    const ansB = this.uniformatValue(answer, caseSensitive);
-
-    const stringMatch = ansA === ansB;
-    const numericMatch = Number(ansA) === Number(ansB);
-
-    return stringMatch || numericMatch;
   }
 
   validateUserAnswersAgainstSolutions(userAnswers, solutions) {
