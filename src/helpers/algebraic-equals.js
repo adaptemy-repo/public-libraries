@@ -1,7 +1,11 @@
 'use strict';
 
-export default function algebraicEquals(a,b){
+export default function algebraicEquals(a,b, caseSensitive){
   try{
+    if (!caseSensitive) {
+      a = typeof a === 'string' ? a.toLowerCase() : a
+      b = typeof b === 'string' ? b.toLowerCase() : b
+    }
     a = a.replace(/–/g, '-'); //be forgiving of different dashes for minus
     b = b.replace(/–/g, '-'); //be forgiving of different dashes for minus
     var dimension = getDimension(a);

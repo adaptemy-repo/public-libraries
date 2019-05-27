@@ -220,7 +220,8 @@ class QTIValidator {
       }
       
       if(isAlgebraic) {
-        return algebraicEquals(value, answer);
+        value = Array.isArray(value) ? value[0] : value
+        return algebraicEquals(value, answer, caseSensitive);
       }
 
       if (this.decimalSeparator !== '.' && answer.indexOf('.') !== -1 && value.indexOf('.') === -1){
