@@ -1,10 +1,10 @@
-import algebra from 'algebra.js';
+import algebra from "algebra.js";
 const pi = Math.PI.toString();
 
 export function latexToAlgebraExpression(latex) {
   let escaped = replaceLatexTokens(latex);
 
-  while(escaped !== replaceLatexTokens(escaped)) {
+  while (escaped !== replaceLatexTokens(escaped)) {
     escaped = replaceLatexTokens(escaped);
   }
 
@@ -15,10 +15,10 @@ export function latexToAlgebraExpression(latex) {
 function replaceLatexTokens(latex) {
   const replaced = latex
     .replace(/\\sqrt\[3\]\{([^\{]*?)\}/g, (match, value) => {
-      return replaceRootExpression(value, 'cbrt');
+      return replaceRootExpression(value, "cbrt");
     })
     .replace(/\\sqrt\{([^\{]*?)\}/g, (match, value) => {
-      return replaceRootExpression(value, 'sqrt');
+      return replaceRootExpression(value, "sqrt");
     })
     .replace(/\\frac\{([^\{]*?)\}\{([^\{]*?)\}/g, (match, top, bottom) => {
       const fraction = `((${calculate(top)})/(${calculate(bottom)}))`;
@@ -26,19 +26,19 @@ function replaceLatexTokens(latex) {
 
       return isFinite(evaluated) ? `(${evaluated})` : fraction;
     })
-    .replace(/\\left\(/g, '(')
-    .replace(/\\right\)/g, ')')
-    .replace(/\\cdot/g, '*')
-    .replace(/\\times/g, '*')
+    .replace(/\\left\(/g, "(")
+    .replace(/\\right\)/g, ")")
+    .replace(/\\cdot/g, "*")
+    .replace(/\\times/g, "*")
     .replace(/\\pi/g, `(${pi})`)
-    .replace(/\^\{([^\{]?)\}/g, '^($1)')
-  
+    .replace(/\^\{([^\{]?)\}/g, "^($1)");
+
   return replaced;
 }
 
 function replaceRootExpression(value, rootType) {
   const evaluated = calculate(value);
-  if(isFinite(evaluated)) {
+  if (isFinite(evaluated)) {
     return `(${Math[rootType](evaluated)})`;
   }
 
@@ -50,7 +50,7 @@ function calculate(expression) {
     const parsed = algebra.parse(expression);
     const evaluated = Number(parsed.eval({}).toString());
     return isFinite(evaluated) ? evaluated : expression;
-  } catch(e) {
+  } catch (e) {
     return expression;
   }
 }
@@ -58,37 +58,38 @@ function calculate(expression) {
 function replaceSquareRoot(match, varname, power) {
   power = parseInt(power);
 
-  if(isNaN(power) || !power || power < 2) {
+  if (isNaN(power) || !power || power < 2) {
     return match;
   }
-  
+
   const diff = power % 2;
-  if(!diff) {
-    return `(${varname}^${power/2})`;
+  if (!diff) {
+    return `(${varname}^${power / 2})`;
   } else {
-    return `((${varname}^${Math.floor(power/2)})*sqrt${varname})`;
+    return `((${varname}^${Math.floor(power / 2)})*sqrt${varname})`;
   }
 }
 
 function replaceCubicRoot(match, varname, power) {
   power = parseInt(power);
 
-  if(isNaN(power) || !power || power < 3) {
+  if (isNaN(power) || !power || power < 3) {
     return match;
   }
-  
+
   const diff = power % 3;
-  if(!diff) {
-    return `(${varname}^${power/3})`;
+  if (!diff) {
+    return `(${varname}^${power / 3})`;
   } else {
-    return `((${varname}^${Math.floor(power/3)})*(cbrt${varname}^${diff}))`;
+    return `((${varname}^${Math.floor(power / 3)})*(cbrt${varname}^${diff}))`;
   }
 }
 
 function recompileRootExpressions(escaped) {
   const parsed = algebra.parse(escaped);
-  
-  const value = parsed.toString()
+
+  const value = parsed
+    .toString()
     // recompile SQUARE ROOT expressions if required
     // converts sqrta^2 to "a" and sqrta^3 to a*sqrta and sqrta^4 to "2a"
     .replace(/sqrt([a-z]?)\^([0-9]?)/gi, replaceSquareRoot)

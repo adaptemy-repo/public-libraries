@@ -1,10 +1,10 @@
-import { create } from 'urlify';
+import { create } from "urlify";
 const urlify = create({});
 
 export function cleanupLatexExpression(exp, caseSensitive) {
-  let escaped = exp.replace(/\\ /g, '');
+  let escaped = exp.replace(/\\ /g, "");
 
-  if(!caseSensitive) {
+  if (!caseSensitive) {
     escaped = escaped.toLowerCase();
   }
 
@@ -13,11 +13,11 @@ export function cleanupLatexExpression(exp, caseSensitive) {
 
 function escapeCharacters(str) {
   let char;
-  let escaped = '';
-  
-  for(let i = 0; i < str.length; i++) {
+  let escaped = "";
+
+  for (let i = 0; i < str.length; i++) {
     char = str[i];
-    if(char !== '_' && urlify(char) !== '_') {
+    if (char !== "_" && urlify(char) !== "_") {
       char = urlify(char)[0];
     }
 
