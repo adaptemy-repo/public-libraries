@@ -333,8 +333,8 @@ class QTIValidator {
         });
 
         // answer was previously entered (look only at first value)
-        if (anyAnswer.indexOf(answer.answers[0]) === -1) {
-          anyAnswer.push(answer.answers[0]);
+        if (anyAnswer.indexOf(answer.answers[0].replace(/\s/g, "")) === -1) {
+          anyAnswer.push(answer.answers[0].replace(/\s/g, ""));
         } else if (matchingSolutions.length > 1) {
           // Are there several matching 'any order' solutions
           // If so, leave the remaining answers alone
