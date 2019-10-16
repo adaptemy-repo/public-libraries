@@ -11,10 +11,16 @@ const MINIMAL_SECOND_CHANCE_RATING = 4;
 class QTIValidator {
   constructor() {
     this.decimalSeparator = "."; // default decimal separator
+    this.thousandSeparator = undefined;
   }
 
   setDecimalSeparator(separator) {
     this.decimalSeparator = separator;
+    return this;
+  }
+
+  setThousandSeparator(separator) {
+    this.thousandSeparator = separator;
     return this;
   }
 
@@ -136,28 +142,10 @@ class QTIValidator {
     return solutions.filter(solution => solution.anyOrder);
   }
 
-  containsIncorrectDecimalSeparator(value) {
-    var possibleSeparators = [".", ","];
-    var correctSeparator = this.decimalSeparator;
-    var valueString = "" + value;
-    return possibleSeparators.some(function(separator) {
-      if (separator === correctSeparator) {
-        return false;
-      }
-      if (valueString.includes(separator)) {
-        return true;
-      }
-      return false;
-    });
-  }
-
   isAnswerInRange(userAnswer, range) {
     var min, max;
     [min, max] = range.sort((a, b) => a - b);
     return userAnswer.answers.every(value => {
-      if (this.containsIncorrectDecimalSeparator(value)) {
-        return false;
-      }
       value = parseFloat(value);
       if (isNaN(value)) {
         return false;
@@ -407,9 +395,14 @@ class QTIValidator {
     value = String(value); // stringify
     value = value.replace(/ /g, ""); // remove spaces
     value = caseSensitive ? value : value.toLowerCase();
-
     //flatten different types of comma
     value = value.replace(/\‚/g, ",");
+
+    // remove thousand separator
+    if (this.thousandSeparator) {
+      const thousandRegex = new RegExp(`${this.thousandSeparator}`, "g");
+      value = value.replace(thousandRegex, "");
+    }
 
     // replace decimal separator
     if (this.decimalSeparator !== ".") {
